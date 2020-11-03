@@ -35,7 +35,7 @@
 #include "AliPhysicsSelectionTask.h"
 #include "AliAnalysisTaskPIDResponse.h"
 #include "AliAnalysisTaskWeakDecayVertexer.h"
-#include "AliAnalysisTaskStrangenessVsMultiplicityEEMCRun222.h"
+#include "AliAnalysisTaskStrangenessVsMultiplicityEEMCRun22.h"
 #endif
 
 void runMCongrid_NewSel(Int_t Period = 156)
@@ -91,6 +91,7 @@ void runMCongrid_NewSel(Int_t Period = 156)
   gROOT->LoadMacro("$ALICE_PHYSICS/OADB/COMMON/MULTIPLICITY/macros/AddTaskMultSelection.C");
   AliMultSelectionTask* ms = AddTaskMultSelection();
   ms->SetAddInfo(kTRUE);
+  ms->SetSelectedTriggerClass(AliVEvent::kINT7);
   
   //PID Response
   gROOT->LoadMacro("$ALICE_ROOT/ANALYSIS/macros/AddTaskPIDResponse.C");
@@ -132,7 +133,9 @@ void runMCongrid_NewSel(Int_t Period = 156)
   //Strangness Task
   gROOT->LoadMacro("AliAnalysisTaskStrangenessVsMultiplicityEEMCRun22.cxx++g");
   gROOT->LoadMacro("AddTaskStrangenessVsMultiplicityEEMCRun22.C");
-  AliAnalysisTaskStrangenessVsMultiplicityEEMCRun22* st = AddTaskStrangenessVsMultiplicityEEMCRun22(kTRUE,kTRUE,kTRUE,"ABC");
+  AliAnalysisTaskStrangenessVsMultiplicityEEMCRun22* st = AddTaskStrangenessVsMultiplicityEEMCRun22(kTRUE,kTRUE,kTRUE,"AB");
+  st->SetSaveV0s(kFALSE);
+  st->SetSaveCascades(kFALSE);
   st->SetDownScaleV0(kFALSE, 1.0000);
   st->SetDownScaleCascade(kFALSE, 1.0000);
   st->SetRunVertexers(kFALSE);  
@@ -157,7 +160,7 @@ void runMCongrid_NewSel(Int_t Period = 156)
       //alienHandler->SetROOTVersion("v5-26-00b-6");
       // alienHandler->SetAliROOTVersion("v4-19-21-AN");
       //Please keep this version updated
-      alienHandler->SetAliPhysicsVersion("vAN-20200902-1");   
+      alienHandler->SetAliPhysicsVersion("vAN-20201020-1");   
       alienHandler->SetAnalysisMacro("AnalysisStrangenessMC.C"); 
 
       // number of files per subjob
@@ -195,7 +198,7 @@ void runMCongrid_NewSel(Int_t Period = 156)
       	Int_t runList[51] = {226500, 226495, 226483, 226476, 226472, 226468, 226466, 226452, 226445, 226444, 226225, 226220, 226170, 226062, 225768, 225766, 225763, 225762, 225757, 225753, 225719, 225717, 225716, 225710, 225709, 225708, 225707, 225705, 225587, 225586, 225579, 225578, 225576, 225322, 225315, 225314, 225313, 225310, 225309, 225307, 225305, 225106, 225052, 225051, 225050, 225043, 225041, 225037, 225035, 225031, 225026};
       	for (Int_t i = 0;i <5; i++) alienHandler->AddRunNumber(runList[i]);
       	
-      	alienHandler->SetGridWorkingDir("NewEvSel/MC/LHC15f");
+      	alienHandler->SetGridWorkingDir("NewEveventSelection/MC/LHC15f");
       }
               
     	//LHC17j
@@ -254,7 +257,7 @@ void runMCongrid_NewSel(Int_t Period = 156)
       } else
     	{
     	  //full grid      
-    	  alienHandler->SetRunMode("terminate");
+    	  alienHandler->SetRunMode("full");
     	  mgr->StartAnalysis("grid");
     	}
       

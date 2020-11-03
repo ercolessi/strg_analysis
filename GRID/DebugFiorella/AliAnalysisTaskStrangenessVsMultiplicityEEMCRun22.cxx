@@ -11,6 +11,12 @@
  * appear in the supporting documentation. The authors make no claims     *
  * about the suitability of this software for any purpose. It is          *
  * provided "as is" without express or implied warranty.                  *
+ *                                                                        *
+ *                                                                        * 
+ * Modified version of AliAnalysisTaskStrangenessVsMultiplicityMCRun2.cxx *
+ *                                                                        *
+ * --- Francesca Ercolessi: francesca.ercolessi@cern.ch                   *
+ *                                                                        *
  **************************************************************************/
 
 // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -124,11 +130,11 @@ AliAnalysisTaskStrangenessVsMultiplicityEEMCRun22::AliAnalysisTaskStrangenessVsM
 : AliAnalysisTaskSE(), fListHist(0), fListK0Short(0), fListLambda(0), fListAntiLambda(0),
 fListXiMinus(0), fListXiPlus(0), fListOmegaMinus(0), fListOmegaPlus(0),
 fTreeEvent(0), fTreeV0(0), fTreeCascade(0),
-fPIDResponse(0), fESDtrackCuts(0), fESDtrackCutsITSsa2010(0), fESDtrackCutsGlobal2015(0), fUtils(0), fRand(0),
+fPIDResponse(0), fESDtrackCuts(0), fESDtrackCutsITSsa2010(0), fESDtrackCutsGlobal2015(0), fUtils(0), fPPVsMultUtils(0), fRand(0),
 
 //---> Flags controlling Event Tree output
 fkSaveEventTree    ( kTRUE ), //no downscaling in this tree so far
-fkDownScaleEvent      ( kTRUE  ),
+fkDownScaleEvent      ( kFALSE  ),
 fDownScaleFactorEvent      ( 0.0  ),
 
 //---> Flags controlling V0 TTree output
@@ -195,6 +201,13 @@ fTrigType(AliVEvent::kMB),
 fRun(0),
 fEvSel_INELgtZEROtrue(kFALSE),
 fEvSel_INELgtZERO(kFALSE),
+fIsINELgtZERO(kFALSE),
+fIsNotPileupSPDInMultBins(kFALSE),
+fIsAcceptedVertexPosition(kFALSE),
+fHasNoInconsistentSPDandTrackVertices(kFALSE),
+fIsSelectedTrigger(kFALSE),
+fIsNotIncDAQ(kFALSE),
+fHasPassVtxClsCut(kFALSE),
 fCentrality(0),
 fMVPileupFlag(kFALSE),
 fOOBPileupFlag(kFALSE),
@@ -715,11 +728,11 @@ AliAnalysisTaskStrangenessVsMultiplicityEEMCRun22::AliAnalysisTaskStrangenessVsM
 : AliAnalysisTaskSE(name), fListHist(0), fListK0Short(0), fListLambda(0), fListAntiLambda(0),
 fListXiMinus(0), fListXiPlus(0), fListOmegaMinus(0), fListOmegaPlus(0),
 fTreeEvent(0), fTreeV0(0), fTreeCascade(0),
-fPIDResponse(0), fESDtrackCuts(0), fESDtrackCutsITSsa2010(0), fESDtrackCutsGlobal2015(0), fUtils(0), fRand(0),
+fPIDResponse(0), fESDtrackCuts(0), fESDtrackCutsITSsa2010(0), fESDtrackCutsGlobal2015(0), fUtils(0), fPPVsMultUtils(0), fRand(0),
 
 //---> Flags controlling Event Tree output
 fkSaveEventTree    ( kTRUE ), //no downscaling in this tree so far
-fkDownScaleEvent      ( kTRUE  ),
+fkDownScaleEvent      ( kFALSE  ),
 fDownScaleFactorEvent      ( 0.0  ),
 
 //---> Flags controlling V0 TTree output
@@ -786,6 +799,13 @@ fTrigType(AliVEvent::kMB),
 fRun(0),
 fEvSel_INELgtZEROtrue(kFALSE),
 fEvSel_INELgtZERO(kFALSE),
+fIsINELgtZERO(kFALSE),
+fIsNotPileupSPDInMultBins(kFALSE),
+fIsAcceptedVertexPosition(kFALSE),
+fHasNoInconsistentSPDandTrackVertices(kFALSE),
+fIsSelectedTrigger(kFALSE),
+fIsNotIncDAQ(kFALSE),
+fHasPassVtxClsCut(kFALSE),
 fCentrality(0),
 fMVPileupFlag(kFALSE),
 fOOBPileupFlag(kFALSE),
@@ -1425,6 +1445,10 @@ AliAnalysisTaskStrangenessVsMultiplicityEEMCRun22::~AliAnalysisTaskStrangenessVs
         delete fUtils;
         fUtils = 0x0;
     }
+    if (fPPVsMultUtils) {
+        delete fPPVsMultUtils;
+        fPPVsMultUtils = 0x0;
+    }
     if (fRand) {
         delete fRand;
         fRand = 0x0;
@@ -1450,7 +1474,15 @@ void AliAnalysisTaskStrangenessVsMultiplicityEEMCRun22::UserCreateOutputObjects(
 		}
 	    fTreeEvent->Branch("fRun",&fRun,"fRun/I");
 	    fTreeEvent->Branch("fEvSel_INELgtZERO", &fEvSel_INELgtZERO, "fEvSel_INELgtZERO/O");
-	    fTreeEvent->Branch("fEvSel_INELgtZEROtrue", &fEvSel_INELgtZEROtrue, "fEvSel_INELgtZEROtrue/O");	    
+	    fTreeEvent->Branch("fEvSel_INELgtZEROtrue", &fEvSel_INELgtZEROtrue, "fEvSel_INELgtZEROtrue/O");
+	    fTreeEvent->Branch("fIsINELgtZERO", &fIsINELgtZERO, "fIsINELgtZERO/O");	    
+	    fTreeEvent->Branch("fIsNotPileupSPDInMultBins", &fIsNotPileupSPDInMultBins, "fIsNotPileupSPDInMultBins/O");	    
+	    fTreeEvent->Branch("fIsAcceptedVertexPosition", &fIsAcceptedVertexPosition, "fIsAcceptedVertexPosition/O");	    
+	    fTreeEvent->Branch("fHasNoInconsistentSPDandTrackVertices", &fHasNoInconsistentSPDandTrackVertices, "fHasNoInconsistentSPDandTrackVertices/O");	    
+	    fTreeEvent->Branch("fIsSelectedTrigger", &fIsSelectedTrigger, "fIsSelectedTrigger/O");	    
+	    fTreeEvent->Branch("fIsNotIncDAQ", &fIsNotIncDAQ, "fIsNotIncDAQ/O");	    
+	    fTreeEvent->Branch("fHasPassVtxClsCut", &fHasPassVtxClsCut, "fHasPassVtxClsCut/O");	    
+	   
     	
         //
         if ( fkDebugOOBPileup ){
@@ -1986,6 +2018,10 @@ void AliAnalysisTaskStrangenessVsMultiplicityEEMCRun22::UserCreateOutputObjects(
     if(! fUtils ) {
         fUtils = new AliAnalysisUtils();
     }
+     //Analysis PPVsMultUtils
+    if(! fPPVsMultUtils ) {
+        fPPVsMultUtils = new AliPPVsMultUtils();;
+    }
     if(! fRand ){
         fRand = new TRandom3();
         // From TRandom3 reference:
@@ -2383,8 +2419,7 @@ void AliAnalysisTaskStrangenessVsMultiplicityEEMCRun22::UserExec(Option_t *)
     //--------- GENERATED NUMBER OF CHARGED PARTICLES FOT EVENT LOSS CORRECTION
     // ---> Variable Definition
 
-    //True z vtx < 10 cm
-    if (fzVtxZMC > 10.) return;
+    fEvSel_INELgtZEROtrue = kFALSE;
 
     //----- Loop on Stack ----------------------------------------------------------------
    	for (Int_t iCurrentLabelStack = 0;  iCurrentLabelStack < (lMCstack->GetNtrack()); iCurrentLabelStack++)
@@ -2403,13 +2438,16 @@ void AliAnalysisTaskStrangenessVsMultiplicityEEMCRun22::UserExec(Option_t *)
                 
     }//End of loop on tracks 
 
-    if (!fEvSel_INELgtZEROtrue) return;
+    //True z vtx < 10 cm
+    if (fzVtxZMC >= 10.) fEvSel_INELgtZEROtrue = kFALSE;
+
+    //if (!fEvSel_INELgtZEROtrue) return;
     //----- End Loop on Stack ------------------------------------------------------------
 
     //From now on only true INEL>0 events are selected
 
     Double_t lMagneticField = -10;
-    lMagneticField = lESDevent->GetMagneticField( );
+    lMagneticField = lESDevent->GetMagneticField();
     fTreeCascVarMagField = lMagneticField;
 
     //------------------------------------------------
@@ -2432,6 +2470,9 @@ void AliAnalysisTaskStrangenessVsMultiplicityEEMCRun22::UserExec(Option_t *)
         lEvSelCode = MultSelection->GetEvSelCode();
     }
 
+    //lPercentile = fPPVsMultUtils->GetMultiplicityPercentile(lESDevent, "V0M", kFALSE);
+    //lPercentileEmbeddedSelection = fPPVsMultUtils->GetMultiplicityPercentile(lESDevent, "V0M", kTRUE);
+
     //just ask AliMultSelection. It will know.
     fMVPileupFlag = kFALSE;
     fMVPileupFlag = MultSelection->GetThisEventIsNotPileupMV();
@@ -2446,26 +2487,6 @@ void AliAnalysisTaskStrangenessVsMultiplicityEEMCRun22::UserExec(Option_t *)
         if ( centrality ) {
             fCentrality = centrality->GetCentralityPercentile( "V0M" );
         }
-    }
-
-    //===================================================================
-    //V0 multiplicity selection (MultSelection)
-    if( lEvSelCode != 0 ) {
-        //Regular Output: Slots 1-8
-        PostData(1, fListHist       );
-        PostData(2, fListK0Short    );
-        PostData(3, fListLambda     );
-        PostData(4, fListAntiLambda );
-        PostData(5, fListXiMinus    );
-        PostData(6, fListXiPlus     );
-        PostData(7, fListOmegaMinus );
-        PostData(8, fListOmegaPlus  );
-        
-        //TTree Objects: Slots 9-11
-        if(fkSaveEventTree)    PostData(9, fTreeEvent   );
-        if(fkSaveV0Tree)       PostData(10, fTreeV0      );
-        if(fkSaveCascadeTree)  PostData(11, fTreeCascade );
-        return;
     }
 
     //ZDC info for Effective Energy analysis
@@ -2506,7 +2527,7 @@ void AliAnalysisTaskStrangenessVsMultiplicityEEMCRun22::UserExec(Option_t *)
 
         lThisPDG = lPart->GetPdgCode();
 
-        if ( (TMath::Abs(lThisPDG) == 3312) || (TMath::Abs(lThisPDG) == 3334) || (TMath::Abs(lThisPDG) == 3122) || lThisPDG == 310 )
+        if ( fEvSel_INELgtZEROtrue && (TMath::Abs(lThisPDG) == 3312) || (TMath::Abs(lThisPDG) == 3334) || (TMath::Abs(lThisPDG) == 3122) || lThisPDG == 310 )
         {
         	lThisRap   = MyRapidity(lPart->Energy(),lPart->Pz());
             lThisPt    = lPart->Pt();
@@ -2515,37 +2536,37 @@ void AliAnalysisTaskStrangenessVsMultiplicityEEMCRun22::UserExec(Option_t *)
 
             if( lThisPDG ==   310 && TMath::Abs(lThisRap) < 0.5 ) {
                 fHistPt_GenK0Short -> Fill ( lThisPt );
-                fHistPtVsCentV0M_GenK0Short -> Fill (lThisPt, lPercentileEmbeddedSelection);
+                fHistPtVsCentV0M_GenK0Short -> Fill (lThisPt, lPercentile);
                 fHistPtVsZDC_GenK0Short -> Fill (lThisPt, lZDCLogSum);
             }
             if( lThisPDG ==  3122 && TMath::Abs(lThisRap) < 0.5 ) {
                 fHistPt_GenLambda -> Fill ( lThisPt );
-                fHistPtVsCentV0M_GenLambda -> Fill (lThisPt, lPercentileEmbeddedSelection);
+                fHistPtVsCentV0M_GenLambda -> Fill (lThisPt, lPercentile);
                 fHistPtVsZDC_GenLambda -> Fill (lThisPt, lZDCLogSum);
             }
             if( lThisPDG == -3122 && TMath::Abs(lThisRap) < 0.5 ) {
                 fHistPt_GenAntiLambda -> Fill ( lThisPt );
-                fHistPtVsCentV0M_GenAntiLambda -> Fill (lThisPt, lPercentileEmbeddedSelection);
+                fHistPtVsCentV0M_GenAntiLambda -> Fill (lThisPt, lPercentile);
                 fHistPtVsZDC_GenAntiLambda -> Fill (lThisPt, lZDCLogSum);
             }
             if( lThisPDG ==  3312 && TMath::Abs(lThisRap) < 0.5 ) {
                 fHistPt_GenXiMinus -> Fill (lThisPt);
-                fHistPtVsCentV0M_GenXiMinus -> Fill (lThisPt, lPercentileEmbeddedSelection);
+                fHistPtVsCentV0M_GenXiMinus -> Fill (lThisPt, lPercentile);
                 fHistPtVsZDC_GenXiMinus -> Fill (lThisPt, lZDCLogSum);
             }
             if( lThisPDG == -3312 && TMath::Abs(lThisRap) < 0.5 ) {
                 fHistPt_GenXiPlus -> Fill (lThisPt);
-                fHistPtVsCentV0M_GenXiPlus -> Fill (lThisPt, lPercentileEmbeddedSelection);
+                fHistPtVsCentV0M_GenXiPlus -> Fill (lThisPt, lPercentile);
                 fHistPtVsZDC_GenXiPlus -> Fill (lThisPt, lZDCLogSum);
             }
             if( lThisPDG ==  3334 && TMath::Abs(lThisRap) < 0.5 ) {
                 fHistPt_GenOmegaMinus -> Fill (lThisPt);
-                fHistPtVsCentV0M_GenOmegaMinus -> Fill (lThisPt, lPercentileEmbeddedSelection);
+                fHistPtVsCentV0M_GenOmegaMinus -> Fill (lThisPt, lPercentile);
                 fHistPtVsZDC_GenOmegaMinus -> Fill (lThisPt, lZDCLogSum);
             }
             if( lThisPDG == -3334 && TMath::Abs(lThisRap) < 0.5 ) {
                 fHistPt_GenOmegaPlus -> Fill (lThisPt);
-                fHistPtVsCentV0M_GenOmegaPlus -> Fill (lThisPt, lPercentileEmbeddedSelection);
+                fHistPtVsCentV0M_GenOmegaPlus -> Fill (lThisPt, lPercentile);
                 fHistPtVsZDC_GenOmegaPlus -> Fill (lThisPt, lZDCLogSum);
             }
         }
@@ -2562,11 +2583,26 @@ void AliAnalysisTaskStrangenessVsMultiplicityEEMCRun22::UserExec(Option_t *)
     fHistEventCounter->Fill(0.5);
 
     fEvSel_INELgtZERO = kFALSE;
-    AliPPVsMultUtils *multUtils = new AliPPVsMultUtils();
-    Bool_t IsSelected = multUtils->IsEventSelected(lESDevent, fTrigType);
-    Bool_t NotIncDAQ = !lESDevent->IsIncompleteDAQ();
-    Bool_t PassVtxClsCut = !(fkApplyTrackletsVsClustersCut && fUtils->IsSPDClusterVsTrackletBG( lESDevent));
-    if( IsSelected && NotIncDAQ && PassVtxClsCut ) fEvSel_INELgtZERO = kTRUE ;
+    fIsINELgtZERO = kFALSE;
+    fIsNotPileupSPDInMultBins = kFALSE;
+    fIsAcceptedVertexPosition = kFALSE;
+    fHasNoInconsistentSPDandTrackVertices = kFALSE;
+    fIsSelectedTrigger = kFALSE;
+    fIsNotIncDAQ = kFALSE;
+    fHasPassVtxClsCut = kFALSE;
+    Bool_t IsSelected = kFALSE;
+
+    fIsINELgtZERO = fPPVsMultUtils->IsINELgtZERO(lESDevent);
+    fIsNotPileupSPDInMultBins = fPPVsMultUtils->IsNotPileupSPDInMultBins(lESDevent);
+    fIsAcceptedVertexPosition = fPPVsMultUtils->IsAcceptedVertexPosition(lESDevent);
+    fHasNoInconsistentSPDandTrackVertices = fPPVsMultUtils->HasNoInconsistentSPDandTrackVertices(lESDevent);
+    fIsSelectedTrigger = fPPVsMultUtils->IsSelectedTrigger(lESDevent);
+    IsSelected = fPPVsMultUtils->IsEventSelected(lESDevent, fTrigType);
+    fIsNotIncDAQ = !lESDevent->IsIncompleteDAQ();
+    fHasPassVtxClsCut = !(fkApplyTrackletsVsClustersCut && fUtils->IsSPDClusterVsTrackletBG(lESDevent));
+
+    if( IsSelected && fIsNotIncDAQ && fHasPassVtxClsCut ) fEvSel_INELgtZERO = kTRUE;
+    //fEvSel_INELgtZERO &= !lEvSelCode;
     
     //------------------------------------------------
     // Primary Vertex Requirements Section:
@@ -2587,7 +2623,7 @@ void AliAnalysisTaskStrangenessVsMultiplicityEEMCRun22::UserExec(Option_t *)
     fTreeVariablePrimVertexZ = lBestPrimaryVtxPos[2];
     
     //Optional cut on the R2D of the primary vertex
-    if ( TMath::Sqrt( TMath::Power(fTreeVariablePrimVertexX,2)+TMath::Power(fTreeVariablePrimVertexY,2))>fkMaxPVR2D ) fEvSel_INELgtZERO = kFALSE;
+    //if ( TMath::Sqrt( TMath::Power(fTreeVariablePrimVertexX,2)+TMath::Power(fTreeVariablePrimVertexY,2))>fkMaxPVR2D ) fEvSel_INELgtZERO = kFALSE;
     
     fTreeVariableMagneticField = lMagneticField;
  
@@ -2739,52 +2775,52 @@ void AliAnalysisTaskStrangenessVsMultiplicityEEMCRun22::UserExec(Option_t *)
             if ( lMCstack->IsPhysicalPrimary(ilab)!=kTRUE ) continue;
             
             if( lThisPDG ==   310 ) {
-                fHistGeneratedPtVsYVsCentralityK0Short       -> Fill (lThisPt, lThisRap, lPercentileEmbeddedSelection);
+                fHistGeneratedPtVsYVsCentralityK0Short       -> Fill (lThisPt, lThisRap, lPercentile);
                 if (TMath::Abs(lThisRap) < 0.5) {
                 	fHistGeneratedPtVsZDCK0Short->Fill(lThisPt,lZDCLogSum);
                 }
             }
             if( lThisPDG ==  3122 ) {
-                fHistGeneratedPtVsYVsCentralityLambda       -> Fill (lThisPt, lThisRap, lPercentileEmbeddedSelection);
+                fHistGeneratedPtVsYVsCentralityLambda       -> Fill (lThisPt, lThisRap, lPercentile);
                 if (TMath::Abs(lThisRap) < 0.5) {
                 	fHistGeneratedPtVsZDCLambda->Fill(lThisPt,lZDCLogSum);
                 }
             }
             if( lThisPDG == -3122 ) {
-                fHistGeneratedPtVsYVsCentralityAntiLambda       -> Fill (lThisPt, lThisRap, lPercentileEmbeddedSelection);
+                fHistGeneratedPtVsYVsCentralityAntiLambda       -> Fill (lThisPt, lThisRap, lPercentile);
                 if (TMath::Abs(lThisRap) < 0.5) {
                 	fHistGeneratedPtVsZDCAntiLambda->Fill(lThisPt,lZDCLogSum);
                 }
             }
             if( lThisPDG ==  3312 ) {
-                fHistGeneratedPtVsYVsCentralityXiMinus       -> Fill (lThisPt, lThisRap, lPercentileEmbeddedSelection);
+                fHistGeneratedPtVsYVsCentralityXiMinus       -> Fill (lThisPt, lThisRap, lPercentile);
                 if (TMath::Abs(lThisRap) < 0.5) {
                 	fHistGeneratedPtVsZDCXiMinus->Fill(lThisPt,lZDCLogSum);
                 }
             }
             if( lThisPDG == -3312 ) {
-                fHistGeneratedPtVsYVsCentralityXiPlus       -> Fill (lThisPt, lThisRap, lPercentileEmbeddedSelection);
+                fHistGeneratedPtVsYVsCentralityXiPlus       -> Fill (lThisPt, lThisRap, lPercentile);
                 if (TMath::Abs(lThisRap) < 0.5) {
                 	fHistGeneratedPtVsZDCXiPlus->Fill(lThisPt,lZDCLogSum);
                 }
             }
             if( lThisPDG ==  3334 ) {
-                fHistGeneratedPtVsYVsCentralityOmegaMinus       -> Fill (lThisPt, lThisRap, lPercentileEmbeddedSelection);
+                fHistGeneratedPtVsYVsCentralityOmegaMinus       -> Fill (lThisPt, lThisRap, lPercentile);
                 if (TMath::Abs(lThisRap) < 0.5) {
                 	fHistGeneratedPtVsZDCOmegaMinus->Fill(lThisPt,lZDCLogSum);
                 }
             }
             if( lThisPDG == -3334 ) {
-                fHistGeneratedPtVsYVsCentralityOmegaPlus       -> Fill (lThisPt, lThisRap, lPercentileEmbeddedSelection);
+                fHistGeneratedPtVsYVsCentralityOmegaPlus       -> Fill (lThisPt, lThisRap, lPercentile);
                 if (TMath::Abs(lThisRap) < 0.5) {
                 	fHistGeneratedPtVsZDCOmegaPlus->Fill(lThisPt,lZDCLogSum);
                 }
             }
             if( lThisPDG == 1010010030 ) {
-                fHistGeneratedPtVsYVsCentralityHypertriton       -> Fill (lThisPt, lThisRap, lPercentileEmbeddedSelection);
+                fHistGeneratedPtVsYVsCentralityHypertriton       -> Fill (lThisPt, lThisRap, lPercentile);
             }
             if( lThisPDG == -1010010030 ) {
-                fHistGeneratedPtVsYVsCentralityAntihypertriton       -> Fill (lThisPt, lThisRap, lPercentileEmbeddedSelection);
+                fHistGeneratedPtVsYVsCentralityAntihypertriton       -> Fill (lThisPt, lThisRap, lPercentile);
             }
         }
     }//End of loop on tracks

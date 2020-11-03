@@ -15,10 +15,9 @@
 
 // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 //
-// Modified version of AliAnalysisTaskCheckCascade.h
-// Used bits of code from AliAnalysisTaskCheckPerformanceStrange
+// Modified version of AliAnalysisTaskStrangenessVsMultiplicityMCRun2.h
 //
-// --- David Dobrigkeit Chinellato
+// --- Francesca Ercolessi: francesca.ercolessi@cern.ch
 //
 // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
@@ -40,6 +39,7 @@ class TProfile;
 class AliESDpid;
 class AliESDtrackCuts;
 class AliAnalysisUtils;
+class AliPPVsMultUtils;
 class AliESDEvent;
 class AliPhysicsSelection;
 class AliCFContainer;
@@ -315,6 +315,7 @@ private:
     AliESDtrackCuts *fESDtrackCutsITSsa2010;  // ESD track cuts used for ITSsa track definition
     AliESDtrackCuts *fESDtrackCutsGlobal2015; // ESD track cuts used for global track definition
     AliAnalysisUtils *fUtils;         // analysis utils (for MV pileup selection)
+    AliPPVsMultUtils *fPPVsMultUtils;  // analysis utils for multiplicity studies
     
     AliEventCuts fEventCuts;                 /// Event cuts class
     AliEventCuts fEventCutsStrictAntipileup; /// Event cuts class
@@ -398,6 +399,13 @@ private:
     Bool_t fOOBPileupFlag; //!
     Bool_t fEvSel_INELgtZERO; //!
     Bool_t fEvSel_INELgtZEROtrue; //!
+    Bool_t fIsINELgtZERO; //!
+    Bool_t fIsNotPileupSPDInMultBins; //!
+    Bool_t fIsAcceptedVertexPosition; //!
+    Bool_t fHasNoInconsistentSPDandTrackVertices; //!
+    Bool_t fIsSelectedTrigger; //!
+    Bool_t fIsNotIncDAQ; //!
+    Bool_t fHasPassVtxClsCut; //!
     
     //TOF info for OOB pileuo study
     Int_t  fNTOFClusters;  //!
