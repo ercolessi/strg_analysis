@@ -660,7 +660,7 @@ void ComputeEfficiencies(Bool_t kDoMult = kTRUE, Bool_t kDoEE = kTRUE, TString l
     Write->cd();
     TDirectoryFile* epspart = new TDirectoryFile("SgnLoss","SgnLoss");
     epspart->cd();
-    for (type = 0; type < 6 ; type++){
+    for (int type = 0; type < 6 ; type++){
         for (int k = 0; k<10; k++){
         	fHistptSelV0[k][type]->Write();
         	fHistptSelZDC[k][type]->Write();
