@@ -407,18 +407,18 @@ void ComputeEfficiencies(Bool_t kDoMult = kTRUE, Bool_t kDoEE = kTRUE, TString l
     //Perform epsilon part    
     for (int type = 0; type < 6; type++){
 
-        fixedlowmineebin = h3DGenSelDD[type]->GetYaxis()->FindBin( LogLowEE[0] );
-        fixedlowmaxeebin = h3DGenSelDD[type]->GetYaxis()->FindBin( LogLowEE[1] );
-        fixedhighmineebin = h3DGenSelDD[type]->GetYaxis()->FindBin( LogHighEE[0] );
-        fixedhighmaxeebin = h3DGenSelDD[type]->GetYaxis()->FindBin( LogHighEE[1] );
+        Double_t fixedlowmineebin = h3DGenSelDD[type]->GetYaxis()->FindBin( LogLowEE[0] );
+        Double_t fixedlowmaxeebin = h3DGenSelDD[type]->GetYaxis()->FindBin( LogLowEE[1] );
+        Double_t fixedhighmineebin = h3DGenSelDD[type]->GetYaxis()->FindBin( LogHighEE[0] );
+        Double_t fixedhighmaxeebin = h3DGenSelDD[type]->GetYaxis()->FindBin( LogHighEE[1] );
 
-        fixedlowminmultbin = h3DGenSelDD[type]->GetZaxis()->FindBin( FixedLowmult[0] );
-        fixedlowmaxmultbin = h3DGenSelDD[type]->GetZaxis()->FindBin( FixedLowmult[1] );
-        fixedhighminmultbin = h3DGenSelDD[type]->GetZaxis()->FindBin( FixedHighmult[0] );
-        fixedhighmaxmultbin = h3DGenSelDD[type]->GetZaxis()->FindBin( FixedHighmult[1] );
+        Double_t fixedlowminmultbin = h3DGenSelDD[type]->GetZaxis()->FindBin( FixedLowmult[0] );
+        Double_t fixedlowmaxmultbin = h3DGenSelDD[type]->GetZaxis()->FindBin( FixedLowmult[1] );
+        Double_t fixedhighminmultbin = h3DGenSelDD[type]->GetZaxis()->FindBin( FixedHighmult[0] );
+        Double_t fixedhighmaxmultbin = h3DGenSelDD[type]->GetZaxis()->FindBin( FixedHighmult[1] );
 
         Double_t *partptbinlimits;
-        Double_t *partptbinnumb;
+        Long_t partptbinnumb;
 
         if (parttype[type].Data() == "Lambda" || parttype[type].Data() == "AntiLambda") {
             partptbinlimits = ptbinlimitsLambda;
@@ -467,8 +467,8 @@ void ComputeEfficiencies(Bool_t kDoMult = kTRUE, Bool_t kDoEE = kTRUE, TString l
             fHistpttrueSelZDC[i-1] = new TH1D(Form("fHistpttrueSelZDC_%i-%i",(int)ee[i-1],(int)ee[i]),"Cascade MC count;p_{T} (GeV/c);Counts", partptbinnumb, partptbinlimits);
 
             //Double diff
-            minmultbinDD = h3DGenSelDD[type]->GetZaxis()->FindBin( mult[i-1]+1e-6 );
-            maxmultbinDD = h3DGenSelDD[type]->GetZaxis()->FindBin( mult[i]-1e-6 );
+            Double_t minmultbinDD = h3DGenSelDD[type]->GetZaxis()->FindBin( mult[i-1]+1e-6 );
+            Double_t maxmultbinDD = h3DGenSelDD[type]->GetZaxis()->FindBin( mult[i]-1e-6 );
 
             fHistGenSelV0FixLowEE[i-1][type] = (TH1D*)h3DGenSelDD[type]->ProjectionX(Form("fHistGenSelDDLowEE%i",i), fixedlowmineebin, fixedlowmaxeebin, minmultbinDD, maxmultbinDD);
             fHistGenSelV0FixHighEE[i-1][type] = (TH1D*)h3DGenSelDD[type]->ProjectionX(Form("fHistGenSelDDHighEE%i",i), fixedhighmineebin, fixedhighmaxeebin, minmultbinDD, maxmultbinDD);
