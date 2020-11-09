@@ -81,10 +81,11 @@ void runStrangeAnalysis_ROOT6(Int_t Period)
   //MultSelection
   //gROOT->LoadMacro("$ALICE_PHYSICS/OADB/COMMON/MULTIPLICITY/macros/AddTaskMultSelection.C");
   AliMultSelectionTask* ms =  reinterpret_cast<AliMultSelectionTask*>(gInterpreter->ExecuteMacro("$ALICE_PHYSICS/OADB/COMMON/MULTIPLICITY/macros/AddTaskMultSelection.C"));
+  ms->SetAddInfo(kTRUE);
   
   //PID Response
   //gROOT->LoadMacro("$ALICE_ROOT/ANALYSIS/macros/AddTaskPIDResponse.C");
-  AliAnalysisTaskPIDResponse* pid = reinterpret_cast<AliAnalysisTaskPIDResponse*>(gInterpreter->ExecuteMacro("$ALICE_ROOT/ANALYSIS/macros/AddTaskPIDResponse.C\(0.\)"));
+  AliAnalysisTaskPIDResponse* pid = reinterpret_cast<AliAnalysisTaskPIDResponse*>(gInterpreter->ExecuteMacro("$ALICE_ROOT/ANALYSIS/macros/AddTaskPIDResponse.C\(kFALSE\)"));
   
   //Weak Decay Vertexer
   // gROOT->LoadMacro("$ALICE_PHYSICS/PWGLF/STRANGENESS/Cascades/Run2/macros/AddTaskWeakDecayVertexer.C");
@@ -148,7 +149,7 @@ void runStrangeAnalysis_ROOT6(Int_t Period)
       //alienHandler->SetROOTVersion("v5-26-00b-6");
       //alienHandler->SetAliROOTVersion("v4-19-21-AN");
       //Please keep this version updated 
-      alienHandler->SetAliPhysicsVersion("vAN-20200902_ROOT6-1");   
+      alienHandler->SetAliPhysicsVersion("vAN-20201102_ROOT6-1");   
       alienHandler->SetAnalysisMacro("AnalysisLeading.C"); 
 
       // number of files per subjob

@@ -19,11 +19,14 @@ Double_t GetEEfromZDC ( TFile* lfilename , Float_t lZPCpp, Float_t lZNCpp, Float
 
 void ComputeEfficiencies(Bool_t kDoMult = kTRUE, Bool_t kDoEE = kTRUE, TString lCascType = "XiMinus"){
 
-	TFile* file = new TFile("LHC15f_ZDCefftest.root","READ");
+	TFile* file = new TFile("Final15f.root","READ");
 		//"MCLHC17j_GP.root"
-	const char* ZDCFilename = "tests/ExtractedZDCPercentile_15fZDCtestZDC.root"; //""
-    const char* ZDCpartfilename = "tests/ExtractedZDCPercentile_15fZDCtestZDC.root"; //""
-	const char* outputname = "EventCountLoss_15ftest.root";
+	const char* ZDCFilename = "ExtractedZDCPercentile_final15f.root"; //""
+    const char* ZDCpartfilename = ZDCFilename; //""
+	const char* outputname = "EventCountLoss_Final15f.root";
+    TFile* Read = new TFile (ZDCFilename);
+    TFile* ZDCpartfile = new TFile (ZDCpartfilename);
+    cout << " Effective Energy File: ..." <<  ZDCFilename << "\n\n" << endl;
 
 	cout<<"--------------- Open Real Data File --------------------"<<endl;
     TList* clist      = (TList*)file->Get("PWGLF_StrVsMult_MC/cList");
@@ -35,9 +38,9 @@ void ComputeEfficiencies(Bool_t kDoMult = kTRUE, Bool_t kDoEE = kTRUE, TString l
     Double_t lLoEEBound =   0.;
     Double_t lHiEEBound =   0.;
     Float_t fCentrality = 0.;
-    Bool_t fEvSel_INELgtZERO = kFALSE;
+    Bool_t fEvSel_AllSelections = kFALSE;
     Bool_t fEvSel_INELgtZEROtrue = kFALSE;
-    Float_t fClosestNonEmptyBC = 0.;
+    Bool_t fEvSel_zVtxZMC = kFALSE;
     Float_t ZPCpp, ZNCpp, ZPApp, ZNApp;
     Int_t fRun;
     Float_t fZDCCentrality = 0.;
@@ -49,10 +52,9 @@ void ComputeEfficiencies(Bool_t kDoMult = kTRUE, Bool_t kDoEE = kTRUE, TString l
     lTreeEvent->SetBranchAddress("fZNApp",&ZNApp);
     lTreeEvent->SetBranchAddress("fRun",&fRun);
     lTreeEvent->SetBranchAddress("fCentrality", &fCentrality);
-    lTreeEvent->SetBranchAddress("fEvSel_INELgtZERO", &fEvSel_INELgtZERO);
+    lTreeEvent->SetBranchAddress("fEvSel_zVtxZMC", &fEvSel_zVtxZMC);
+    lTreeEvent->SetBranchAddress("fEvSel_AllSelections", &fEvSel_AllSelections);
     lTreeEvent->SetBranchAddress("fEvSel_INELgtZEROtrue", &fEvSel_INELgtZEROtrue);
-	lTreeEvent->SetBranchAddress("fClosestNonEmptyBC", &fClosestNonEmptyBC); 
-	
     
     TH3D* h3DGenXiINELgt0V0Lambda = (TH3D*)clist->FindObject(Form("fHistGeneratedPtVsYVsCentrality%s", "Lambda"));
     TH2D* h2DGenXitrueINELgt0V0Lambda = (TH2D*)clist->FindObject(Form("fHistPtVsCentV0M_Gen%s", "Lambda"));  
@@ -72,120 +74,247 @@ void ComputeEfficiencies(Bool_t kDoMult = kTRUE, Bool_t kDoEE = kTRUE, TString l
 	//-----------------------------------------------------------------------------------------------------
 	//-------------------------------- Event loss correction ---------------------------------------------- 
     //-----------------------------------------------------------------------------------------------------
-	
-	//Mult variables
-    Long_t lNEventsINELgt0V0[10];
-    Long_t lNEventstrueINELgt0V0[10];
-    Float_t mult[11] = {0,1,5,10,15,20,30,40,50,70,100};
-    TH1F* hevtlossV0 = new TH1F("hevtlossV0", "", 10, mult);
-    //ZDC variables
-    Long_t lNEventsINELgt0ZDC[10];
-    Long_t lNEventstrueINELgt0ZDC[10];
-    Float_t ee[11] = {0,10,20,30,40,50,60,70,80,90,100};    
-    TH1F* hevtlossZDC = new TH1F("hevtlossZDC", "", 10, ee);
-    TFile* Read;
-    TFile* ZDCpartfile;
-    if (kDoEE) {
-    	Read  = new TFile (ZDCFilename);
-        ZDCpartfile = new TFile (ZDCpartfilename);
-    	cout << " Effective Energy File: ..." <<  ZDCFilename << "\n\n" << endl;
-    }
 
+	//Multiplicity Efficiency
+    Float_t mult[] = {0,1,5,10,15,20,30,40,50,70,100};
+    Long_t multbinnumb = sizeof(mult)/sizeof(Float_t) - 1;
+    Long_t lNEvtSelectedV0[multbinnumb];
+    Long_t lNEvttrueSelectedV0[multbinnumb];    
+
+    //Effective energy Efficiency
+    Float_t ee[] = {0,10,20,30,40,50,60,70,80,90,100}; 
+    Long_t eebinnumb = sizeof(ee)/sizeof(Float_t) - 1;
+    Long_t lNEvtSelectedZDC[eebinnumb];
+    Long_t lNEvttrueSelectedZDC[eebinnumb];   
+
+    //Double Differential study
+    //Fixed Energy 
+    Double_t FixedHighEE[2] = {0.,30.};
+    Double_t FixedLowEE[2] = {70.,100};
+    Long_t lNEvtSelectedFixLowEE[multbinnumb];
+    Long_t lNEvttrueSelectedFixLowEE[multbinnumb];
+    Long_t lNEvtSelectedFixHighEE[multbinnumb];
+    Long_t lNEvttrueSelectedFixHighEE[multbinnumb];
+    
+    //Fixed Multiplicity
+    Double_t FixedHighmult[2] = {0.,30.};
+    Double_t FixedLowmult[2] = {70.,100};
+    Long_t lNEvtSelectedFixLowmult[eebinnumb];
+    Long_t lNEvttrueSelectedFixLowmult[eebinnumb];
+    Long_t lNEvtSelectedFixHighmult[eebinnumb];
+    Long_t lNEvttrueSelectedFixHighmult[eebinnumb];
+    
+    //Histograms
+    TH1F* hevtlossV0 = new TH1F("hevtlossV0", "", multbinnumb, mult);
+    hevtlossV0->SetTitle("Event loss correction in mult bins");
+    TH1F* hevtlossZDC = new TH1F("hevtlossZDC", "", eebinnumb, ee);
+    hevtlossZDC->SetTitle("Event loss correction in eff energy bins");
+    TH1F* hevtlossFixLowEE = new TH1F("hevtlossV0FixedLowEE", "", multbinnumb, mult);
+    hevtlossFixLowEE->SetTitle(Form("Event loss correction in mult bins - ZDCperc is fixed in [%.0f,%.0f]",FixedLowEE[0],FixedLowEE[1]));
+    TH1F* hevtlossFixHighEE = new TH1F("hevtlossV0FixedHighEE", "", multbinnumb, mult);
+    hevtlossFixHighEE->SetTitle(Form("Event loss correction in mult bins - ZDCperc is fixed in [%.0f,%.0f]",FixedHighEE[0],FixedHighEE[1]));   
+    TH1F* hevtlossFixLowmult = new TH1F("hevtlossV0FixedLowmult", "", eebinnumb, ee);
+    hevtlossFixLowmult->SetTitle(Form("Event loss correction in eff energy bins - V0Mperc is fixed in [%.0f,%.0f]",FixedLowmult[0],FixedLowmult[1]));
+    TH1F* hevtlossFixHighmult = new TH1F("hevtlossV0FixedHighmult", "", eebinnumb, ee);
+    hevtlossFixHighmult->SetTitle(Form("Event loss correction in eff energy bins - V0Mperc is fixed in [%.0f,%.0f]",FixedHighmult[0],FixedHighmult[1]));
+
+
+    //Pt bins definition
     Double_t ptbinlimits[] = {0.6, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 2.5, 2.9, 3.4, 4.0, 5.0, 6.5};//, 8.0, 10.0 };
     Long_t ptbinnumb = sizeof(ptbinlimits)/sizeof(Double_t) - 1;
 
-    for (int k=0; k<10;k++){
+    /*for (int k=0; k<multbinnumb; k++)
+    {
+        //Mult and EE ranges
+   		lLoMultBound=mult[k];
+   		lHiMultBound=mult[k+1];
+       	cout << " Multiplicity is in range: [" << lLoMultBound << " , " << lHiMultBound << "]\n" << endl;
+    	
+    	lLoEEBound=ee[k];
+    	lHiEEBound=ee[k+1];    	
+      	cout << " Effective energy is in range: [" << lLoEEBound << " , " << lHiEEBound << "]\n" << endl;
 
-    	if (kDoMult){
-    		lLoMultBound=mult[k];
-    		lHiMultBound=mult[k+1];
-    		lNEventsINELgt0V0[k]=0;
-       		lNEventstrueINELgt0V0[k]=0;
-
-       		cout << " Multiplicity is in range: [" << lLoMultBound << " , " << lHiMultBound << "]\n" << endl;
-    	}
-    	if (kDoEE){
-    		lLoEEBound=ee[k];
-    		lHiEEBound=ee[k+1];
-    		lNEventsINELgt0ZDC[k]=0;
-      		lNEventstrueINELgt0ZDC[k]=0;      		
-
-      		cout << " Effective energy is in range: [" << lLoEEBound << " , " << lHiEEBound << "]\n" << endl;
-      	}   	
-        
-      	cout << "Event counters are at " << lNEventsINELgt0V0[k] << "  ";
-      	if (lNEventsINELgt0V0[k] == 0) cout << "as expected" << "\n" << endl;
-
+        //Counters must be initialized to 0
+        lNEvtSelectedV0[k]=0;
+        lNEvttrueSelectedV0[k]=0;
+        lNEvtSelectedZDC[k]=0;
+        lNEvttrueSelectedZDC[k]=0;           
+        lNEvtSelectedFixLowEE[k]=0;
+        lNEvttrueSelectedFixLowEE[k]=0;
+        lNEvtSelectedFixLowmult[k]=0;
+        lNEvttrueSelectedFixLowmult[k]=0;
+        lNEvtSelectedFixHighEE[k]=0;
+        lNEvttrueSelectedFixHighEE[k]=0;
+        lNEvtSelectedFixHighmult[k]=0;
+        lNEvttrueSelectedFixHighmult[k]=0;
+      	 
       	cout<<" \nWill now loop over events, please wait...\n"<<endl;
     	for(Long_t iEv = 0; iEv<lTreeEvent->GetEntries(); iEv++) {
 
         	lTreeEvent->GetEntry(iEv);
         	if( iEv % ( lTreeEvent->GetEntries() / 10 ) == 0 ) cout<<" At Event "<<iEv<<" out of "<<lTreeEvent->GetEntries()<<endl;
-        	// check distance to closest non empty BC
-        	if( TMath::Abs( fClosestNonEmptyBC ) < 0. ) continue; 
-
-            if (fRun == 226476) continue;
-        
-        	//Get ZDCPercentile
-        	if (kDoEE) fZDCCentrality = GetEEfromZDC(Read, ZPCpp, ZNCpp, ZPApp, ZNApp, fRun); 
+  
+          	//Get ZDCPercentile
+        	fZDCCentrality = GetEEfromZDC(Read, ZPCpp, ZNCpp, ZPApp, ZNApp, fRun); 
             
-            //Count events multiplicity
-            if (kDoEE){
-	            if( fEvSel_INELgtZERO &&
-	                fZDCCentrality>=lLoMultBound &&
-	                fZDCCentrality<lHiMultBound     
-	              ) lNEventsINELgt0ZDC[k]++;
-	            if( fEvSel_INELgtZEROtrue &&
-	                fZDCCentrality>=lLoMultBound &&
-	                fZDCCentrality<lHiMultBound  
-	              ) lNEventstrueINELgt0ZDC[k]++;
-	        }
+            //Count events EE
+            if( 
+                fEvSel_AllSelections &&
+	            fZDCCentrality>=lLoEEBound &&
+	            fZDCCentrality<lHiEEBound     
+	            ) 
+                lNEvtSelectedZDC[k]++;
+	        if( 
+                fEvSel_INELgtZEROtrue && 
+                fEvSel_zVtxZMC &&
+	            fZDCCentrality>=lLoEEBound &&
+	            fZDCCentrality<lHiEEBound  
+	            ) 
+                lNEvttrueSelectedZDC[k]++;
 
-	 		//Count events effective energy
-	    	if (kDoMult){
-		        if( fEvSel_INELgtZERO &&
-		        	fCentrality>=lLoMultBound &&
-		            fCentrality<lHiMultBound     
-		          ) lNEventsINELgt0V0[k]++;
-		        if( fEvSel_INELgtZEROtrue &&
-		        	fCentrality>=lLoMultBound &&
-		            fCentrality<lHiMultBound  
-		          ) lNEventstrueINELgt0V0[k]++;
-		    }
+	 		//Count events mult
+	    	if( 
+                fEvSel_AllSelections &&
+		        fCentrality>=lLoMultBound &&
+		        fCentrality<lHiMultBound     
+		      ) 
+                lNEvtSelectedV0[k]++;
+		    if( 
+                fEvSel_INELgtZEROtrue && 
+                fEvSel_zVtxZMC &&
+		       	fCentrality>=lLoMultBound &&
+		        fCentrality<lHiMultBound  
+		      ) 
+                lNEvttrueSelectedV0[k]++;
 
-	    }
-	    if (kDoMult){
-	        cout<<"\n Number of events reco INEL>0, this multiplicity selection....: "<<lNEventsINELgt0V0[k] <<endl;
-	        cout<<" Number of events true INEL>0, this multiplicity selection....: "<<lNEventstrueINELgt0V0[k] <<endl;
-	        cout << " Event Loss Correction Mult Sel... = " << (Float_t)lNEventsINELgt0V0[k]/lNEventstrueINELgt0V0[k] << endl;
-	        cout<<" --------------------------------------------------------"<<endl;
-	    }
-        if (kDoEE){
-	        cout<<"\n Number of events reco INEL>0, this effective energy selection....: "<<lNEventsINELgt0ZDC[k] <<endl;
-	        cout<<" Number of events true INEL>0, this effective energy selection....: "<<lNEventstrueINELgt0ZDC[k] <<endl;
-	        cout << " Event Loss Correction EE Sel ... = " << (Float_t)lNEventsINELgt0ZDC[k]/lNEventstrueINELgt0ZDC[k] << endl;
-	        cout<<" --------------------------------------------------------"<<endl;
-	    }
+            //Double Differential
+            //Fixed Mult Low
+            if( 
+                fEvSel_AllSelections &&
+                fCentrality<FixedLowmult[1] &&
+                fCentrality>=FixedLowmult[0] &&
+                fZDCCentrality>=lLoEEBound &&
+                fZDCCentrality<lHiEEBound     
+                ) 
+                lNEvtSelectedFixLowmult[k]++;
+            if( 
+                fEvSel_INELgtZEROtrue && 
+                fEvSel_zVtxZMC &&
+                fCentrality<FixedLowmult[1] &&
+                fCentrality>=FixedLowmult[0] &&
+                fZDCCentrality>=lLoEEBound &&
+                fZDCCentrality<lHiEEBound  
+                ) 
+                lNEvttrueSelectedFixLowmult[k]++;
+            
+            //Fixed Multiplicity High
+            if( 
+                fEvSel_AllSelections &&
+                fCentrality<FixedHighmult[1] &&
+                fCentrality>=FixedHighmult[0] &&
+                fZDCCentrality>=lLoEEBound &&
+                fZDCCentrality<lHiEEBound     
+                ) 
+                lNEvtSelectedFixHighmult[k]++;
+            if( 
+                fEvSel_INELgtZEROtrue && 
+                fEvSel_zVtxZMC &&
+                fCentrality<FixedHighmult[1] &&
+                fCentrality>=FixedHighmult[0] &&
+                fZDCCentrality>=lLoEEBound &&
+                fZDCCentrality<lHiEEBound  
+                ) 
+                lNEvttrueSelectedFixHighmult[k]++;
+            
+
+            //Fixed Low EE
+            if( 
+                fEvSel_AllSelections &&
+                fZDCCentrality<FixedLowEE[1] &&
+                fZDCCentrality>=FixedLowEE[0] &&
+                fCentrality>=lLoMultBound &&
+                fCentrality<lHiMultBound     
+              ) 
+                lNEvtSelectedFixLowEE[k]++;
+            if( 
+                fEvSel_INELgtZEROtrue && 
+                fEvSel_zVtxZMC &&
+                fZDCCentrality<FixedLowEE[1] &&
+                fZDCCentrality>=FixedLowEE[0] &&
+                fCentrality>=lLoMultBound &&
+                fCentrality<lHiMultBound  
+              ) 
+                lNEvttrueSelectedFixLowEE[k]++;
+		    //Fixed High EE
+            if( 
+                fEvSel_AllSelections &&
+                fZDCCentrality<FixedHighEE[1] &&
+                fZDCCentrality>=FixedHighEE[0] &&
+                fCentrality>=lLoMultBound &&
+                fCentrality<lHiMultBound     
+              ) 
+                lNEvtSelectedFixHighEE[k]++;
+            if( 
+                fEvSel_INELgtZEROtrue && 
+                fEvSel_zVtxZMC &&
+                fZDCCentrality<FixedHighEE[1] &&
+                fZDCCentrality>=FixedHighEE[0] &&
+                fCentrality>=lLoMultBound &&
+                fCentrality<lHiMultBound  
+              ) 
+                lNEvttrueSelectedFixHighEE[k]++;
+
+        }
+
+	    cout<<"\n Number of events reco INEL>0, this multiplicity selection....: "<<lNEvtSelectedV0[k] <<endl;
+	    cout<<" Number of events true INEL>0, this multiplicity selection....: "<<lNEvttrueSelectedV0[k] <<endl;
+	    cout << " Event Loss Correction Mult Sel... = " << (Float_t)lNEvtSelectedV0[k]/lNEvttrueSelectedV0[k] << endl;
+	    cout<<" --------------------------------------------------------"<<endl;
+	   
+	    cout<<"\n Number of events reco INEL>0, this effective energy selection....: "<<lNEvtSelectedZDC[k] <<endl;
+	    cout<<" Number of events true INEL>0, this effective energy selection....: "<<lNEvttrueSelectedZDC[k] <<endl;
+	    cout << " Event Loss Correction EE Sel ... = " << (Float_t)lNEvtSelectedZDC[k]/lNEvttrueSelectedZDC[k] << endl;
+	    cout<<" --------------------------------------------------------"<<endl;	   
             
     }
    
-    if (kDoMult){
-	    for (int i=1; i<= hevtlossV0->GetNbinsX(); i++){
+    for (int i=1; i<= hevtlossV0->GetNbinsX(); i++){
 
-	    	hevtlossV0->SetBinContent(i,(Float_t)lNEventsINELgt0V0[i-1]/lNEventstrueINELgt0V0[i-1]);
-	    	hevtlossV0->SetBinError(i,ErrorInRatio((Float_t)lNEventsINELgt0V0[i-1],(Float_t)TMath::Sqrt(lNEventsINELgt0V0[i-1]),
-	    							(Float_t)lNEventstrueINELgt0V0[i-1],(Float_t)TMath::Sqrt(lNEventstrueINELgt0V0[i-1])));
-	    }   
-	}
+	    hevtlossV0->SetBinContent(i,(Float_t)lNEvtSelectedV0[i-1]/lNEvttrueSelectedV0[i-1]);
+	    hevtlossV0->SetBinError(i,ErrorInRatio(
+            (Float_t)lNEvtSelectedV0[i-1],(Float_t)TMath::Sqrt(lNEvtSelectedV0[i-1]),
+            (Float_t)lNEvttrueSelectedV0[i-1],(Float_t)TMath::Sqrt(lNEvttrueSelectedV0[i-1]))
+            );
+        hevtlossFixLowEE->SetBinContent(i,(Float_t)lNEvtSelectedFixLowEE[i-1]/lNEvttrueSelectedFixLowEE[i-1]);
+        hevtlossFixLowEE->SetBinError(i,ErrorInRatio(
+            (Float_t)lNEvtSelectedFixLowEE[i-1],(Float_t)TMath::Sqrt(lNEvtSelectedFixLowEE[i-1]),
+            (Float_t)lNEvttrueSelectedFixLowEE[i-1],(Float_t)TMath::Sqrt(lNEvttrueSelectedFixLowEE[i-1]))
+            );
+        hevtlossFixHighEE->SetBinContent(i,(Float_t)lNEvtSelectedFixHighEE[i-1]/lNEvttrueSelectedFixHighEE[i-1]);
+        hevtlossFixHighEE->SetBinError(i,ErrorInRatio(
+            (Float_t)lNEvtSelectedFixHighEE[i-1],(Float_t)TMath::Sqrt(lNEvtSelectedFixHighEE[i-1]),
+            (Float_t)lNEvttrueSelectedFixHighEE[i-1],(Float_t)TMath::Sqrt(lNEvttrueSelectedFixHighEE[i-1]))
+            );
+	}   
 
-	if (kDoEE){
-	    for (int i=1; i<= hevtlossZDC->GetNbinsX(); i++){
+    for (int i=1; i<= hevtlossZDC->GetNbinsX(); i++){
 
-	    	hevtlossZDC->SetBinContent(i,(Float_t)lNEventsINELgt0ZDC[i-1]/lNEventstrueINELgt0ZDC[i-1]);
-	    	hevtlossZDC->SetBinError(i,ErrorInRatio((Float_t)lNEventsINELgt0ZDC[i-1],(Float_t)TMath::Sqrt(lNEventsINELgt0ZDC[i-1]),
-	    							(Float_t)lNEventstrueINELgt0ZDC[i-1],(Float_t)TMath::Sqrt(lNEventstrueINELgt0ZDC[i-1])));
-	    }
-	} 
+        hevtlossZDC->SetBinContent(i,(Float_t)lNEvtSelectedZDC[i-1]/lNEvttrueSelectedZDC[i-1]);
+        hevtlossZDC->SetBinError(i,ErrorInRatio(
+            (Float_t)lNEvtSelectedZDC[i-1],(Float_t)TMath::Sqrt(lNEvtSelectedZDC[i-1]),
+            (Float_t)lNEvttrueSelectedZDC[i-1],(Float_t)TMath::Sqrt(lNEvttrueSelectedZDC[i-1]))
+            );	  
+        hevtlossFixLowmult->SetBinContent(i,(Float_t)lNEvtSelectedFixLowmult[i-1]/lNEvttrueSelectedFixLowmult[i-1]);
+        hevtlossFixLowmult->SetBinError(i,ErrorInRatio(
+            (Float_t)lNEvtSelectedFixLowmult[i-1],(Float_t)TMath::Sqrt(lNEvtSelectedFixLowmult[i-1]),
+            (Float_t)lNEvttrueSelectedFixLowmult[i-1],(Float_t)TMath::Sqrt(lNEvttrueSelectedFixLowmult[i-1]))
+            );
+        hevtlossFixHighmult->SetBinContent(i,(Float_t)lNEvtSelectedFixHighmult[i-1]/lNEvttrueSelectedFixHighmult[i-1]);
+        hevtlossFixHighmult->SetBinError(i,ErrorInRatio(
+            (Float_t)lNEvtSelectedFixHighmult[i-1],(Float_t)TMath::Sqrt(lNEvtSelectedFixHighmult[i-1]),
+            (Float_t)lNEvttrueSelectedFixHighmult[i-1],(Float_t)TMath::Sqrt(lNEvttrueSelectedFixHighmult[i-1]))
+            );  
+	}	 */
 
 
 	//-----------------------------------------------------------------------------------------------------
@@ -320,8 +449,12 @@ void ComputeEfficiencies(Bool_t kDoMult = kTRUE, Bool_t kDoEE = kTRUE, TString l
     
 	
    	TFile* Write = new TFile (outputname,"RECREATE");
-    if (kDoMult) hevtlossV0->Write();
-    if (kDoEE) hevtlossZDC->Write();
+    /*hevtlossV0->Write();
+    hevtlossZDC->Write();
+    hevtlossFixHighEE->Write();
+    hevtlossFixLowEE->Write();
+    hevtlossFixLowmult->Write();
+    hevtlossFixHighmult->Write();*/
     for (int k = 0; k<10; k++){
     	fHistptINELgt0V0[k]->Write();
     	fHistptINELgt0ZDC[k]->Write();

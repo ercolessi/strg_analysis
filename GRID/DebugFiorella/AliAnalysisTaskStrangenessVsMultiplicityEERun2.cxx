@@ -11,8 +11,14 @@
  * appear in the supporting documentation. The authors make no claims     *
  * about the suitability of this software for any purpose. It is          *
  * provided "as is" without express or implied warranty.                  *
+ *                                                                        *
+ *                                                                        *
+ * Modified version of AliAnalysisTaskStrangenessVsMultiplicityRun2.cxx   *
+ *                                                                        *
+ * --- Francesca Ercolessi: francesca.ercolessi@cern.ch                   *
+ *                                                                        *
  **************************************************************************/
-
+ 
 // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 //
 // This task is meant to provide a lightweight alternative to the regular
@@ -1717,25 +1723,7 @@ void AliAnalysisTaskStrangenessVsMultiplicityEERun2::UserExec(Option_t *)
         if(fkSaveCascadeTree)  PostData(11, fTreeCascade );   
         return;     
     } 
-    
-    if( lEvSelCode != 0 ) {
-        //Regular Output: Slots 1-6
-        PostData(1, fListHist    );
-        PostData(2, fListK0Short    );
-        PostData(3, fListLambda     );
-        PostData(4, fListAntiLambda );
-        PostData(5, fListXiMinus    );
-        PostData(6, fListXiPlus     );
-        PostData(7, fListOmegaMinus );
-        PostData(8, fListOmegaPlus  );
         
-        //TTree Objects: Slots 9-11
-        if(fkSaveEventTree)    PostData(9, fTreeEvent   );
-        if(fkSaveV0Tree)       PostData(10, fTreeV0      );
-        if(fkSaveCascadeTree)  PostData(11, fTreeCascade );
-        return;
-    }
-    
     AliVEvent *ev = InputEvent();
     if( fkDoExtraEvSels ) {
         if ( fkPileupRejectionMode == 0) {

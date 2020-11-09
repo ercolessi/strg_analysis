@@ -2596,7 +2596,7 @@ void AliAnalysisTaskStrangenessVsMultiplicityEEMCRun22::UserExec(Option_t *)
     fIsNotPileupSPDInMultBins = fPPVsMultUtils->IsNotPileupSPDInMultBins(lESDevent);
     fIsAcceptedVertexPosition = fPPVsMultUtils->IsAcceptedVertexPosition(lESDevent);
     fHasNoInconsistentSPDandTrackVertices = fPPVsMultUtils->HasNoInconsistentSPDandTrackVertices(lESDevent);
-    fIsSelectedTrigger = fPPVsMultUtils->IsSelectedTrigger(lESDevent);
+    fIsSelectedTrigger = fPPVsMultUtils->IsSelectedTrigger(lESDevent, fTrigType);
     IsSelected = fPPVsMultUtils->IsEventSelected(lESDevent, fTrigType);
     fIsNotIncDAQ = !lESDevent->IsIncompleteDAQ();
     fHasPassVtxClsCut = !(fkApplyTrackletsVsClustersCut && fUtils->IsSPDClusterVsTrackletBG(lESDevent));

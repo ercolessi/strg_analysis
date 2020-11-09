@@ -3094,8 +3094,11 @@ void AliCascadeModule::DoAnalysis(){
         lHiMultBoundMC = 100.;
     }
 
+    Bool_t fEvSel_AllSelections = 0;
+
     lTreeEventMC->SetBranchAddress("fCentrality",   &fCentrality);
     lTreeEventMC->SetBranchAddress("fMVPileupFlag", &fMVPileupFlag);
+    lTreeEventMC->SetBranchAddress("fEvSel_AllSelections", &fEvSel_AllSelections);
 
     cout<<"--------------------------------------------------------"<<endl;
     cout<<" Will now loop over events, please wait..."<<endl;
@@ -3106,6 +3109,9 @@ void AliCascadeModule::DoAnalysis(){
         // check MV Pileup rejection
         //if( fMVPileupSwitch && !fMVPileupFlag ) continue;
         // Multiplicity Switch
+
+        if(fEvSel_AllSelections==0) return;
+
         if( fPerformMultiplicityStudy == kTRUE &&  //inside mult bin
             fCentrality>lLoMultBoundMC &&
             fCentrality<lHiMultBoundMC
@@ -3119,6 +3125,7 @@ void AliCascadeModule::DoAnalysis(){
     //Linking to Tree=================================================
     //--- Base Variables ----------------------------------------------
     lTreeMC->SetBranchAddress("fTreeCascVarCharge"  , &lCharge  );
+    lTreeMC->SetBranchAddress("fTreeCascVarEvSel_AllSelections"  , &fEvSel_AllSelections  );
     lTreeMC->SetBranchAddress("fTreeCascVarPosEta"  , &lPosEta  );
     lTreeMC->SetBranchAddress("fTreeCascVarNegEta"  , &lNegEta  );
     lTreeMC->SetBranchAddress("fTreeCascVarBachEta" , &lBachEta );
@@ -3215,6 +3222,9 @@ void AliCascadeModule::DoAnalysis(){
 
         // check MV Pileup rejection
         //if( fMVPileupSwitch && !fMVPileupFlag ) continue;
+        
+        if(fEvSel_AllSelections==0) return;
+
 
         //Multiplicity Switch
         lMultiplicity = (Double_t)fCentrality;

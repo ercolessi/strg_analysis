@@ -5,7 +5,7 @@
 using namespace std;
 
 
-void ConvertZDCtoEE( const char* filename = "MCLHC17j_GP.root", const char* period = "MC18i")
+void ConvertZDCtoEE( const char* filename = "/tmp/new.root", const char* period = "test")
 {  
     //Variables
     Float_t ZPCpp, ZNCpp, ZPApp, ZNApp;

@@ -12,16 +12,13 @@
  * appear in the supporting documentation. The authors make no claims     *
  * about the suitability of this software for any purpose. It is          *
  * provided "as is" without express or implied warranty.                  *
+ *                                                                        *
+ *                                                                        *
+ * Modified version of AliAnalysisTaskStrangenessVsMultiplicityRun2.cxx   *
+ *                                                                        *
+ * --- Francesca Ercolessi: francesca.ercolessi@cern.ch                   *
+ *                                                                        *
  **************************************************************************/
-
-// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-//
-// Modified version of AliAnalysisTaskCheckCascade.h
-// Used bits of code from AliAnalysisTaskCheckPerformanceStrange
-//
-// --- David Dobrigkeit Chinellato
-//
-// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
 #ifndef AliAnalysisTaskStrangenessVsMultiplicityEERun2_H
 #define AliAnalysisTaskStrangenessVsMultiplicityEERun2_H
