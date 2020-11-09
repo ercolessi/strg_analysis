@@ -319,8 +319,8 @@ void ComputeEfficiencies(Bool_t kDoMult = kTRUE, Bool_t kDoEE = kTRUE, TString l
     TH2D* h2DGentrueSelV0[6];   
     TH2D* h2DGenSelZDC[6]; 
     TH2D* h2DGentrueSelZDC[6];
-    TH3D* h2DGenSelDD[6]; 
-    TH3D* h2DGentrueSelDD[6]; 
+    TH3D* h3DGenSelDD[6]; 
+    TH3D* h3DGentrueSelDD[6]; 
 
     for (int type = 0; type < 6; type++){
        h3DGenSelV0[type] = (TH3D*)clist->FindObject(Form("fHistGeneratedPtVsYVsCentrality%s", parttype[type].Data()));
@@ -417,19 +417,22 @@ void ComputeEfficiencies(Bool_t kDoMult = kTRUE, Bool_t kDoEE = kTRUE, TString l
         fixedhighminmultbin = h3DGenSelDD[type]->GetZaxis()->FindBin( FixedHighmult[0] );
         fixedhighmaxmultbin = h3DGenSelDD[type]->GetZaxis()->FindBin( FixedHighmult[1] );
 
+        Double_t *partptbinlimits;
+        Double_t *partptbinnumb;
+
         if (parttype[type].Data() == "Lambda" || parttype[type].Data() == "AntiLambda") {
-            ptbinlimits = ptbinlimitsLambda;
-            ptbinnumb = ptbinnumbLambda;
+            partptbinlimits = ptbinlimitsLambda;
+            partptbinnumb = ptbinnumbLambda;
         }
 
           if (parttype[type].Data() == "XiMinus" || parttype[type].Data() == "XiPlus") {
-            ptbinlimits = ptbinlimitsXi;
-            ptbinnumb = ptbinnumbXi;
+            partptbinlimits = ptbinlimitsXi;
+            partptbinnumb = ptbinnumbXi;
         }
 
           if (parttype[type].Data() == "OmegaMinus" || parttype[type].Data() == "OmegaPlus") {
-            ptbinlimits = ptbinlimitsOmega;
-            ptbinnumb = ptbinnumbOmega;
+            partptbinlimits = ptbinlimitsOmega;
+            partptbinnumb = ptbinnumbOmega;
         }
 
 
@@ -444,8 +447,8 @@ void ComputeEfficiencies(Bool_t kDoMult = kTRUE, Bool_t kDoEE = kTRUE, TString l
     		fHistGenSelV0[i-1][type] = (TH1D*)h3DGenSelV0[type]->ProjectionX(Form("fHistGenSelV0%i",i), minrapbin, maxrapbin, minmultbinV0_h3, maxmultbinV0_h3);
         	fHistGentrueSelV0[i-1][type] = (TH1D*)h2DGentrueSelV0->ProjectionX(Form("fHistGentrueSelV0%i",i), minmultbinV0_h2, maxmultbinV0_h2);
 
-        	fHistptSelV0[i-1][type]  = new TH1D(Form("fHistptSelV0_%i-%i",(int)mult[i-1],(int)mult[i]),"Cascade MC count;p_{T} (GeV/c);Counts", ptbinnumb, ptbinlimits);
-            fHistpttrueSelV0[i-1][type] = new TH1D(Form("fHistpttrueSelV0_%i-%i",(int)mult[i-1],(int)mult[i]),"Cascade MC count;p_{T} (GeV/c);Counts", ptbinnumb, ptbinlimits);
+        	fHistptSelV0[i-1][type]  = new TH1D(Form("fHistptSelV0_%i-%i",(int)mult[i-1],(int)mult[i]),"Cascade MC count;p_{T} (GeV/c);Counts", partptbinnumb, partptbinlimits);
+            fHistpttrueSelV0[i-1][type] = new TH1D(Form("fHistpttrueSelV0_%i-%i",(int)mult[i-1],(int)mult[i]),"Cascade MC count;p_{T} (GeV/c);Counts", partptbinnumb, partptbinlimits);
 
             //Effective energy
             if (ee[i-1] == 0) LowLogSum = 0;
@@ -460,8 +463,8 @@ void ComputeEfficiencies(Bool_t kDoMult = kTRUE, Bool_t kDoEE = kTRUE, TString l
             fHistGenSelZDC[i-1][type] = (TH1D*)h2DGenSelZDC[type]->ProjectionX(Form("fHistGenSelZDC%i",i), mineebinZDC ,maxeebinZDC );
             fHistGentrueSelZDC[i-1][type] = (TH1D*)h2DGentrueSelZDC[type]->ProjectionX(Form("fHistGentrueSelZDC%i",i),mineebinZDC , maxeebinZDC);
 
-            fHistptSelZDC[i-1]  = new TH1D(Form("fHistptSelZDC_%i-%i",(int)ee[i-1],(int)ee[i]),"Cascade MC count;p_{T} (GeV/c);Counts", ptbinnumb, ptbinlimits);
-            fHistpttrueSelZDC[i-1] = new TH1D(Form("fHistpttrueSelZDC_%i-%i",(int)ee[i-1],(int)ee[i]),"Cascade MC count;p_{T} (GeV/c);Counts", ptbinnumb, ptbinlimits);
+            fHistptSelZDC[i-1]  = new TH1D(Form("fHistptSelZDC_%i-%i",(int)ee[i-1],(int)ee[i]),"Cascade MC count;p_{T} (GeV/c);Counts", partptbinnumb, partptbinlimits);
+            fHistpttrueSelZDC[i-1] = new TH1D(Form("fHistpttrueSelZDC_%i-%i",(int)ee[i-1],(int)ee[i]),"Cascade MC count;p_{T} (GeV/c);Counts", partptbinnumb, partptbinlimits);
 
             //Double diff
             minmultbinDD = h3DGenSelDD[type]->GetZaxis()->FindBin( mult[i-1]+1e-6 );
@@ -477,10 +480,10 @@ void ComputeEfficiencies(Bool_t kDoMult = kTRUE, Bool_t kDoEE = kTRUE, TString l
             fHistGentrueSelZDCFixLowmult[i-1][type] = (TH1D*)h3DGentrueSelDD[type]->ProjectionX(Form("fHistGentrueSelDDLowEE%i",i),mineebinZDC , maxeebinZDC,  fixedminmultbin, fixedlowmaxmultbin);
             fHistGentrueSelZDCFixHighmult[i-1][type] = (TH1D*)h3DGentrueSelDD[type]->ProjectionX(Form("fHistGentrueSelDDHighEE%i",i), mineebinZDC , maxeebinZDC, fixedminmultbin, fixedlowmaxmultbin);
 
-            fHistptSelV0FixHighEE[i-1][type]  = new TH1D(Form("fHistptSelV0FixHighEE_%i-%i",(int)mult[i-1],(int)mult[i]),"Cascade MC count;p_{T} (GeV/c);Counts", ptbinnumb, ptbinlimits);
-            fHistptSelV0FixLowEE[i-1][type] = new TH1D(Form("fHistpttrueSelV0FixLowEE_%i-%i",(int)mult[i-1],(int)mult[i]),"Cascade MC count;p_{T} (GeV/c);Counts", ptbinnumb, ptbinlimits);
-            fHistptSelZDCFixHighmult[i-1][type]  = new TH1D(Form("fHistptSelZDCFixHighmult_%i-%i",(int)ee[i-1],(int)ee[i]),"Cascade MC count;p_{T} (GeV/c);Counts", ptbinnumb, ptbinlimits);
-            fHistptSelZDCFixLowmult[i-1][type] = new TH1D(Form("fHistptSelZDCFixLowmult_%i-%i",(int)ee[i-1],(int)ee[i]),"Cascade MC count;p_{T} (GeV/c);Counts", ptbinnumb, ptbinlimits);
+            fHistptSelV0FixHighEE[i-1][type]  = new TH1D(Form("fHistptSelV0FixHighEE_%i-%i",(int)mult[i-1],(int)mult[i]),"Cascade MC count;p_{T} (GeV/c);Counts", partptbinnumb, partptbinlimits);
+            fHistptSelV0FixLowEE[i-1][type] = new TH1D(Form("fHistpttrueSelV0FixLowEE_%i-%i",(int)mult[i-1],(int)mult[i]),"Cascade MC count;p_{T} (GeV/c);Counts", partptbinnumb, partptbinlimits);
+            fHistptSelZDCFixHighmult[i-1][type]  = new TH1D(Form("fHistptSelZDCFixHighmult_%i-%i",(int)ee[i-1],(int)ee[i]),"Cascade MC count;p_{T} (GeV/c);Counts", partptbinnumb, partptbinlimits);
+            fHistptSelZDCFixLowmult[i-1][type] = new TH1D(Form("fHistptSelZDCFixLowmult_%i-%i",(int)ee[i-1],(int)ee[i]),"Cascade MC count;p_{T} (GeV/c);Counts", partptbinnumb, partptbinlimits);
 
         } 
 
