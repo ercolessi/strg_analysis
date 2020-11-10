@@ -17,13 +17,13 @@ double ErrorInRatio ( Double_t A, Double_t Aerr, Double_t B, Double_t Berr );
 void DivideAndComputeRogerBarlow( TH1D* h1, TH1D *h2 );
 Double_t GetEEfromZDC ( TFile* lfilename , Float_t lZPCpp, Float_t lZNCpp, Float_t lZPApp, Float_t lZNApp, Int_t lRun );
 
-void ComputeEfficiencies(Bool_t kDoMult = kTRUE, Bool_t kDoEE = kTRUE, TString lCascType = "XiMinus"){
+void ComputeEfficiencies(){
 
-	TFile* file = new TFile("Final15f.root","READ");
+	TFile* file = new TFile("FixEpspart.root","READ");
 		//"MCLHC17j_GP.root"
-	const char* ZDCFilename = "ExtractedZDCPercentile_final15f.root"; //""
+	const char* ZDCFilename = "ExtractedZDCPercentile_15fEffpart.root"; //""
     const char* ZDCpartfilename = ZDCFilename; //""
-	const char* outputname = "EventCountLoss_Final15f.root";
+	const char* outputname = "EventCountLoss_15fCommitTest.root";
     TFile* Read = new TFile (ZDCFilename);
     TFile* ZDCpartfile = new TFile (ZDCpartfilename);
     cout << " Effective Energy File: ..." <<  ZDCFilename << "\n\n" << endl;
@@ -114,7 +114,7 @@ void ComputeEfficiencies(Bool_t kDoMult = kTRUE, Bool_t kDoEE = kTRUE, TString l
     Long_t ptbinnumbXi = sizeof(ptbinlimitsXi)/sizeof(Double_t) - 1;
     Long_t ptbinnumbOmega = sizeof(ptbinlimitsOmega)/sizeof(Double_t) - 1;
 
-    /*for (int k=0; k<multbinnumb; k++)
+    for (int k=0; k<multbinnumb; k++)
     {
         //Mult and EE ranges
    		lLoMultBound=mult[k];
@@ -305,7 +305,7 @@ void ComputeEfficiencies(Bool_t kDoMult = kTRUE, Bool_t kDoEE = kTRUE, TString l
             (Float_t)lNEvtSelectedFixHighmult[i-1],(Float_t)TMath::Sqrt(lNEvtSelectedFixHighmult[i-1]),
             (Float_t)lNEvttrueSelectedFixHighmult[i-1],(Float_t)TMath::Sqrt(lNEvttrueSelectedFixHighmult[i-1]))
             );  
-	}	 */
+	}	 
 
 
 	//-----------------------------------------------------------------------------------------------------
@@ -321,7 +321,7 @@ void ComputeEfficiencies(Bool_t kDoMult = kTRUE, Bool_t kDoEE = kTRUE, TString l
     TH2D* h2DGentrueSelZDC[6];
     TH3D* h3DGenSelDD[6]; 
     TH3D* h3DGentrueSelDD[6]; 
-
+    
     for (int type = 0; type < 6; type++){
        h3DGenSelV0[type] = (TH3D*)clist->FindObject(Form("fHistGeneratedPtVsYVsCentrality%s", parttype[type].Data()));
        h2DGentrueSelV0[type] = (TH2D*)clist->FindObject(Form("fHistPtVsCentV0M_Gen%s", parttype[type].Data()));
@@ -393,7 +393,6 @@ void ComputeEfficiencies(Bool_t kDoMult = kTRUE, Bool_t kDoEE = kTRUE, TString l
     	RevCum_y[atbin] = hCumulative->GetBinCenter(ibin+1);
     	RevCum_x[atbin] = hCumulative->GetBinContent(ibin+1);     	    	  	
     }
-
     TGraph* ReverseCumulative = new TGraph(filledbins,RevCum_x,RevCum_y);
 
     //Double diff values
@@ -403,6 +402,11 @@ void ComputeEfficiencies(Bool_t kDoMult = kTRUE, Bool_t kDoEE = kTRUE, TString l
     Double_t LogHighEE[2]; 
     LogHighEE[0] = ReverseCumulative->Eval(FixedHighEE[0]/100+1e-6);
     LogHighEE[1] = ReverseCumulative->Eval(FixedHighEE[1]/100+1e-6);
+
+    //varie
+    Double_t *partptbinlimits = 0;
+    Long_t partptbinnumb = 0;
+    Double_t temppt;
 
     //Perform epsilon part    
     for (int type = 0; type < 6; type++){
@@ -417,20 +421,18 @@ void ComputeEfficiencies(Bool_t kDoMult = kTRUE, Bool_t kDoEE = kTRUE, TString l
         Double_t fixedhighminmultbin = h3DGenSelDD[type]->GetZaxis()->FindBin( FixedHighmult[0] );
         Double_t fixedhighmaxmultbin = h3DGenSelDD[type]->GetZaxis()->FindBin( FixedHighmult[1] );
 
-        Double_t *partptbinlimits;
-        Long_t partptbinnumb;
 
-        if (parttype[type].Data() == "Lambda" || parttype[type].Data() == "AntiLambda") {
+        if (type == 0 || type == 1) {
             partptbinlimits = ptbinlimitsLambda;
             partptbinnumb = ptbinnumbLambda;
         }
 
-          if (parttype[type].Data() == "XiMinus" || parttype[type].Data() == "XiPlus") {
+        if (type == 2 || type == 3) {
             partptbinlimits = ptbinlimitsXi;
             partptbinnumb = ptbinnumbXi;
         }
 
-          if (parttype[type].Data() == "OmegaMinus" || parttype[type].Data() == "OmegaPlus") {
+        if (type == 4 || type == 5) {
             partptbinlimits = ptbinlimitsOmega;
             partptbinnumb = ptbinnumbOmega;
         }
@@ -444,18 +446,16 @@ void ComputeEfficiencies(Bool_t kDoMult = kTRUE, Bool_t kDoEE = kTRUE, TString l
         	minmultbinV0_h2 = h2DGentrueSelV0[type]->GetYaxis()->FindBin( mult[i-1]+1e-6 );
         	maxmultbinV0_h2 = h2DGentrueSelV0[type]->GetYaxis()->FindBin( mult[i]-1e-6 );
 
-    		fHistGenSelV0[i-1][type] = (TH1D*)h3DGenSelV0[type]->ProjectionX(Form("fHistGenSelV0%i",i), minrapbin, maxrapbin, minmultbinV0_h3, maxmultbinV0_h3);
-        	fHistGentrueSelV0[i-1][type] = (TH1D*)h2DGentrueSelV0[type]->ProjectionX(Form("fHistGentrueSelV0%i",i), minmultbinV0_h2, maxmultbinV0_h2);
+    		fHistGenSelV0[i-1][type] = (TH1D*)h3DGenSelV0[type]->ProjectionX(Form("fHistGenSelV0%i%s",i,parttype[type].Data()), minrapbin, maxrapbin, minmultbinV0_h3, maxmultbinV0_h3);
+        	fHistGentrueSelV0[i-1][type] = (TH1D*)h2DGentrueSelV0[type]->ProjectionX(Form("fHistGentrueSelV0%i%s",i,parttype[type].Data()), minmultbinV0_h2, maxmultbinV0_h2);
 
-        	fHistptSelV0[i-1][type]  = new TH1D(Form("fHistptSelV0_%i-%i",(int)mult[i-1],(int)mult[i]),"Cascade MC count;p_{T} (GeV/c);Counts", partptbinnumb, partptbinlimits);
-            fHistpttrueSelV0[i-1][type] = new TH1D(Form("fHistpttrueSelV0_%i-%i",(int)mult[i-1],(int)mult[i]),"Cascade MC count;p_{T} (GeV/c);Counts", partptbinnumb, partptbinlimits);
+        	fHistptSelV0[i-1][type]  = new TH1D(Form("fHistptSelV0_%i-%i_%s",(int)mult[i-1],(int)mult[i],parttype[type].Data()),"Signal loss corr in mult bins;p_{T} (GeV/c);Counts", partptbinnumb, partptbinlimits);
+            fHistpttrueSelV0[i-1][type] = new TH1D(Form("fHistpttrueSelV0_%i-%i_%s",(int)mult[i-1],(int)mult[i],parttype[type].Data()),"Signal loss corr in mult bins;p_{T} (GeV/c);Counts", partptbinnumb, partptbinlimits);
 
             //Effective energy
             if (ee[i-1] == 0) LowLogSum = 0;
             else LowLogSum = ReverseCumulative->Eval(ee[i-1]/100+1e-6);
             HighLogSum = ReverseCumulative->Eval(ee[i]/100-1e-6);
-
-            cout << "low " << LowLogSum << "   high " << HighLogSum << endl;
 
             mineebinZDC = h2DGentrueSelZDC[type]->GetYaxis()->FindBin( LowLogSum );
             maxeebinZDC = h2DGentrueSelZDC[type]->GetYaxis()->FindBin( HighLogSum );
@@ -463,8 +463,8 @@ void ComputeEfficiencies(Bool_t kDoMult = kTRUE, Bool_t kDoEE = kTRUE, TString l
             fHistGenSelZDC[i-1][type] = (TH1D*)h2DGenSelZDC[type]->ProjectionX(Form("fHistGenSelZDC%s%i",parttype[type].Data() ,i), mineebinZDC ,maxeebinZDC );
             fHistGentrueSelZDC[i-1][type] = (TH1D*)h2DGentrueSelZDC[type]->ProjectionX(Form("fHistGentrueSelZDC%s%i",parttype[type].Data() ,i),mineebinZDC , maxeebinZDC);
 
-            fHistptSelZDC[i-1][type]  = new TH1D(Form("fHistptSelZDC_%i-%i_%s",(int)ee[i-1],(int)ee[i], parttype[type].Data()),"Cascade MC count;p_{T} (GeV/c);Counts", partptbinnumb, partptbinlimits);
-            fHistpttrueSelZDC[i-1][type] = new TH1D(Form("fHistpttrueSelZDC_%i-%i_%s",(int)ee[i-1],(int)ee[i], parttype[type].Data()),"Cascade MC count;p_{T} (GeV/c);Counts", partptbinnumb, partptbinlimits);
+            fHistptSelZDC[i-1][type]  = new TH1D(Form("fHistptSelZDC_%i-%i_%s",(int)ee[i-1],(int)ee[i], parttype[type].Data()),"Signal loss corr in eff energy bins;p_{T} (GeV/c);Counts", partptbinnumb, partptbinlimits);
+            fHistpttrueSelZDC[i-1][type] = new TH1D(Form("fHistpttrueSelZDC_%i-%i_%s",(int)ee[i-1],(int)ee[i], parttype[type].Data()),"Signal loss corrin eff energy bins ;p_{T} (GeV/c);Counts", partptbinnumb, partptbinlimits);
 
             //Double diff
             Double_t minmultbinDD = h3DGenSelDD[type]->GetZaxis()->FindBin( mult[i-1]+1e-6 );
@@ -480,15 +480,24 @@ void ComputeEfficiencies(Bool_t kDoMult = kTRUE, Bool_t kDoEE = kTRUE, TString l
             fHistGentrueSelZDCFixLowmult[i-1][type] = (TH1D*)h3DGentrueSelDD[type]->ProjectionX(Form("fHistGentrueSelDDLowmult%s%i",parttype[type].Data(),i),mineebinZDC , maxeebinZDC,  fixedlowminmultbin, fixedlowmaxmultbin);
             fHistGentrueSelZDCFixHighmult[i-1][type] = (TH1D*)h3DGentrueSelDD[type]->ProjectionX(Form("fHistGentrueSelDDHighmult%s%i",parttype[type].Data(),i), mineebinZDC , maxeebinZDC, fixedhighminmultbin, fixedhighmaxmultbin);
 
-            fHistptSelV0FixHighEE[i-1][type]  = new TH1D(Form("fHistptSelV0FixHighEE_%i-%i_%s",(int)mult[i-1],(int)mult[i],parttype[type].Data()),"Cascade MC count;p_{T} (GeV/c);Counts", partptbinnumb, partptbinlimits);
-            fHistptSelV0FixLowEE[i-1][type] = new TH1D(Form("fHistpttrueSelV0FixLowEE_%i-%i_%s",(int)mult[i-1],(int)mult[i],parttype[type].Data()),"Cascade MC count;p_{T} (GeV/c);Counts", partptbinnumb, partptbinlimits);
-            fHistptSelZDCFixHighmult[i-1][type]  = new TH1D(Form("fHistptSelZDCFixHighmult_%i-%i_%s",(int)ee[i-1],(int)ee[i],parttype[type].Data()),"Cascade MC count;p_{T} (GeV/c);Counts", partptbinnumb, partptbinlimits);
-            fHistptSelZDCFixLowmult[i-1][type] = new TH1D(Form("fHistptSelZDCFixLowmult_%i-%i_%s",(int)ee[i-1],(int)ee[i],parttype[type].Data()),"Cascade MC count;p_{T} (GeV/c);Counts", partptbinnumb, partptbinlimits);
+            fHistptSelV0FixHighEE[i-1][type]  = new TH1D(Form("fHistptSelV0FixHighEE_%i-%i_%s",(int)mult[i-1],(int)mult[i],parttype[type].Data()),
+                Form("Signal loss corr in mult bins - ZDCperc is fixed in [%.0f,%.0f];p_{T} (GeV/c);Counts",FixedHighEE[0],FixedHighEE[1]), partptbinnumb, partptbinlimits);
+            fHistptSelV0FixLowEE[i-1][type] = new TH1D(Form("fHistptSelV0FixLowEE_%i-%i_%s",(int)mult[i-1],(int)mult[i],parttype[type].Data()),
+                Form("Signal loss corr in mult bins - ZDCperc is fixed in [%.0f,%.0f];p_{T} (GeV/c);Counts",FixedLowEE[0],FixedLowEE[1]), partptbinnumb, partptbinlimits);
+            fHistptSelZDCFixHighmult[i-1][type]  = new TH1D(Form("fHistptSelZDCFixHighmult_%i-%i_%s",(int)ee[i-1],(int)ee[i],parttype[type].Data()),
+                Form("Signal loss corr in eff energy bins - multperc is fixed in [%.0f,%.0f];p_{T} (GeV/c);Counts",FixedHighmult[0],FixedHighmult[1]), partptbinnumb, partptbinlimits);
+            fHistptSelZDCFixLowmult[i-1][type] = new TH1D(Form("fHistptSelZDCFixLowmult_%i-%i_%s",(int)ee[i-1],(int)ee[i],parttype[type].Data()),
+                Form("Signal loss corr in eff energy bins - multperc is fixed in [%.0f,%.0f];p_{T} (GeV/c);Counts",FixedLowmult[0],FixedLowmult[1]), partptbinnumb, partptbinlimits);
+
+            fHistpttrueSelV0FixHighEE[i-1][type]  = new TH1D(Form("fHistpttrueSelV0FixHighEE_%i-%i_%s",(int)mult[i-1],(int)mult[i],parttype[type].Data()),"Signal loss corr;p_{T} (GeV/c);Counts", partptbinnumb, partptbinlimits);
+            fHistpttrueSelV0FixLowEE[i-1][type] = new TH1D(Form("fHistpttrueSelV0FixLowEE_%i-%i_%s",(int)mult[i-1],(int)mult[i],parttype[type].Data()),"Signal loss corr;p_{T} (GeV/c);Counts", partptbinnumb, partptbinlimits);
+            fHistpttrueSelZDCFixHighmult[i-1][type]  = new TH1D(Form("fHistpttrueSelZDCFixHighmult_%i-%i_%s",(int)ee[i-1],(int)ee[i],parttype[type].Data()),"Signal loss corr;p_{T} (GeV/c);Counts", partptbinnumb, partptbinlimits);
+            fHistpttrueSelZDCFixLowmult[i-1][type] = new TH1D(Form("fHistpttrueSelZDCFixLowmult_%i-%i_%s",(int)ee[i-1],(int)ee[i],parttype[type].Data()),"Signal loss corr;p_{T} (GeV/c);Counts", partptbinnumb, partptbinlimits);
 
         } 
 
         //Do V0 selection
-        Double_t temppt;
+        temppt = 0;
         for (int k = 0; k<10; k++){
     	    for(long i = 1; i<fHistGenSelV0[k][type]->GetNbinsX()+1;i++){
     	        temppt = fHistGenSelV0[k][type]->GetXaxis()->GetBinCenter(i);
@@ -499,12 +508,12 @@ void ComputeEfficiencies(Bool_t kDoMult = kTRUE, Bool_t kDoEE = kTRUE, TString l
     	}
 
     	
-    	Double_t temppt2;
+    	temppt = 0;
     	for (int k = 0; k<10; k++){
     	    for(long i = 1; i<fHistGentrueSelV0[k][type]->GetNbinsX()+1;i++){
-    	        temppt2 = fHistGentrueSelV0[k][type]->GetXaxis()->GetBinCenter(i);
+    	        temppt = fHistGentrueSelV0[k][type]->GetXaxis()->GetBinCenter(i);
     	        for(long filling = 0; filling<fHistGentrueSelV0[k][type]->GetBinContent(i); filling++){
-    	            fHistpttrueSelV0[k][type]->Fill(temppt2);
+    	            fHistpttrueSelV0[k][type]->Fill(temppt);
     	        }
     	    }
     	}
@@ -512,6 +521,7 @@ void ComputeEfficiencies(Bool_t kDoMult = kTRUE, Bool_t kDoEE = kTRUE, TString l
     	for (int k = 0; k<10; k++){
     		DivideAndComputeRogerBarlow(fHistptSelV0[k][type],fHistpttrueSelV0[k][type]);
     	}
+
 
     	//Do ZDC selection
         temppt = 0;
@@ -525,12 +535,12 @@ void ComputeEfficiencies(Bool_t kDoMult = kTRUE, Bool_t kDoEE = kTRUE, TString l
     	}
 
     	
-    	temppt2 = 0;
+    	temppt = 0;
     	for (int k = 0; k<10; k++){
     	    for(long i = 1; i<fHistGentrueSelZDC[k][type]->GetNbinsX()+1;i++){
-    	        temppt2 = fHistGentrueSelZDC[k][type]->GetXaxis()->GetBinCenter(i);
+    	        temppt = fHistGentrueSelZDC[k][type]->GetXaxis()->GetBinCenter(i);
     	        for(long filling = 0; filling<fHistGentrueSelZDC[k][type]->GetBinContent(i); filling++){
-    	            fHistpttrueSelZDC[k][type]->Fill(temppt2);
+    	            fHistpttrueSelZDC[k][type]->Fill(temppt);
     	        }
     	    }
     	}
@@ -553,12 +563,12 @@ void ComputeEfficiencies(Bool_t kDoMult = kTRUE, Bool_t kDoEE = kTRUE, TString l
         }
 
         
-        temppt2 = 0;
+        temppt = 0;
         for (int k = 0; k<10; k++){
             for(long i = 1; i<fHistGentrueSelV0FixHighEE[k][type]->GetNbinsX()+1;i++){
-                temppt2 = fHistGentrueSelV0FixHighEE[k][type]->GetXaxis()->GetBinCenter(i);
+                temppt = fHistGentrueSelV0FixHighEE[k][type]->GetXaxis()->GetBinCenter(i);
                 for(long filling = 0; filling<fHistGentrueSelV0FixHighEE[k][type]->GetBinContent(i); filling++){
-                    fHistpttrueSelV0FixHighEE[k][type]->Fill(temppt2);
+                    fHistpttrueSelV0FixHighEE[k][type]->Fill(temppt);
                 }
             }
         }
@@ -579,12 +589,12 @@ void ComputeEfficiencies(Bool_t kDoMult = kTRUE, Bool_t kDoEE = kTRUE, TString l
         }
 
         
-        temppt2 = 0;
+        temppt = 0;
         for (int k = 0; k<10; k++){
             for(long i = 1; i<fHistGentrueSelV0FixLowEE[k][type]->GetNbinsX()+1;i++){
-                temppt2 = fHistGentrueSelV0FixLowEE[k][type]->GetXaxis()->GetBinCenter(i);
+                temppt = fHistGentrueSelV0FixLowEE[k][type]->GetXaxis()->GetBinCenter(i);
                 for(long filling = 0; filling<fHistGentrueSelV0FixLowEE[k][type]->GetBinContent(i); filling++){
-                    fHistpttrueSelV0FixLowEE[k][type]->Fill(temppt2);
+                    fHistpttrueSelV0FixLowEE[k][type]->Fill(temppt);
                 }
             }
         }
@@ -606,12 +616,12 @@ void ComputeEfficiencies(Bool_t kDoMult = kTRUE, Bool_t kDoEE = kTRUE, TString l
         }
 
         
-        temppt2 = 0;
+        temppt = 0;
         for (int k = 0; k<10; k++){
             for(long i = 1; i<fHistGentrueSelZDCFixHighmult[k][type]->GetNbinsX()+1;i++){
-                temppt2 = fHistGentrueSelZDCFixHighmult[k][type]->GetXaxis()->GetBinCenter(i);
+                temppt = fHistGentrueSelZDCFixHighmult[k][type]->GetXaxis()->GetBinCenter(i);
                 for(long filling = 0; filling<fHistGentrueSelZDCFixHighmult[k][type]->GetBinContent(i); filling++){
-                    fHistpttrueSelZDCFixHighmult[k][type]->Fill(temppt2);
+                    fHistpttrueSelZDCFixHighmult[k][type]->Fill(temppt);
                 }
             }
         }
@@ -632,12 +642,12 @@ void ComputeEfficiencies(Bool_t kDoMult = kTRUE, Bool_t kDoEE = kTRUE, TString l
         }
 
         
-        temppt2 = 0;
+        temppt = 0;
         for (int k = 0; k<10; k++){
             for(long i = 1; i<fHistGentrueSelZDCFixLowmult[k][type]->GetNbinsX()+1;i++){
-                temppt2 = fHistGentrueSelZDCFixLowmult[k][type]->GetXaxis()->GetBinCenter(i);
+                temppt = fHistGentrueSelZDCFixLowmult[k][type]->GetXaxis()->GetBinCenter(i);
                 for(long filling = 0; filling<fHistGentrueSelZDCFixLowmult[k][type]->GetBinContent(i); filling++){
-                    fHistpttrueSelZDCFixLowmult[k][type]->Fill(temppt2);
+                    fHistpttrueSelZDCFixLowmult[k][type]->Fill(temppt);
                 }
             }
         }
@@ -645,30 +655,66 @@ void ComputeEfficiencies(Bool_t kDoMult = kTRUE, Bool_t kDoEE = kTRUE, TString l
         for (int k = 0; k<10; k++){
             DivideAndComputeRogerBarlow(fHistptSelZDCFixLowmult[k][type],fHistpttrueSelZDCFixLowmult[k][type]);
         }
+
+         cout << "I did " << parttype[type].Data() << "!" << endl;
     }
     
+    cout << "I did all particles" << endl;
 	
    	TFile* Write = new TFile (outputname,"RECREATE");
     TDirectoryFile* epsevt = new TDirectoryFile("EventLoss","EventLoss");
     epsevt->cd();
-    /*hevtlossV0->Write();
+    hevtlossV0->Write();
     hevtlossZDC->Write();
     hevtlossFixHighEE->Write();
     hevtlossFixLowEE->Write();
     hevtlossFixLowmult->Write();
-    hevtlossFixHighmult->Write();*/
+    hevtlossFixHighmult->Write();
     Write->cd();
     TDirectoryFile* epspart = new TDirectoryFile("SgnLoss","SgnLoss");
     epspart->cd();
+    TDirectoryFile* dirtype[6];
+    TDirectoryFile* direstim[6][6];   
+
     for (int type = 0; type < 6 ; type++){
+
+        dirtype[type] = new TDirectoryFile(Form("%s",parttype[type].Data()),Form("%s",parttype[type].Data()));
+        dirtype[type]->cd();
+        direstim[0][type] = new TDirectoryFile("multsel","multsel");
+        direstim[1][type] = new TDirectoryFile("EEsel","multsel");
+        direstim[2][type] = new TDirectoryFile("EEsel_fixedlowmult","EEsel_fixedlowmult");
+        direstim[3][type] = new TDirectoryFile("EEsel_fixedhighult","EEsel_fixedhighmult");
+        direstim[4][type] = new TDirectoryFile("multsel_fixedlowEE","multsel_fixedlowEE");
+        direstim[5][type] = new TDirectoryFile("multsel_fixedhighEE","multsel_fixedhighEE");
+        
         for (int k = 0; k<10; k++){
+
+            direstim[0][type]->cd();
         	fHistptSelV0[k][type]->Write();
+            dirtype[type]->cd();
+
+            direstim[1][type]->cd();
         	fHistptSelZDC[k][type]->Write();
+            dirtype[type]->cd();
+
+            direstim[2][type]->cd();
             fHistptSelZDCFixLowmult[k][type]->Write();
+            dirtype[type]->cd();
+
+            direstim[3][type]->cd();
             fHistptSelZDCFixHighmult[k][type]->Write();
+            dirtype[type]->cd();
+
+            direstim[4][type]->cd();
             fHistptSelV0FixLowEE[k][type]->Write();
+            dirtype[type]->cd();
+
+            direstim[5][type]->cd();
             fHistptSelV0FixHighEE[k][type]->Write();
+            dirtype[type]->cd();
+
         }
+        epspart->cd();
     }
     Write->cd();
 }
