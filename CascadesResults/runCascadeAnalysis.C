@@ -16,9 +16,9 @@ void runCascadeAnalysis(
   TString lWhichMult = Form("%05.0lfto%05.0lf", 100.*lMultBoundLo, 100.*lMultBoundHi); 
 
   //Set data files
-  TString lMCFilename = "/alistorage/effectiveenergy/FilesTreni_INELgtZERO/MCLHC17j_StrInj_grid.root" ; //0x0
-  TString lDataFilename  = "/alistorage/effectiveenergy/FilesTreni_INELgtZERO/LHC17j_TrainMerge.root" ;//0x0;
-  TString lZDCtoEEFilename  = "ExtractedZDCPercentile_17j.root" ;//0x0;
+  TString lMCFilename = "MC15g3b1.root" ; //0x0
+  TString lDataFilename  = "/alistorage/effectiveenergy/FilesTreni_INELgtZERO/LHC15f_TrainMerge.root" ;//0x0;
+  TString lZDCtoEEFilename  = "ExtractedZDCPercentile_OFFICIAL15f.root" ;//0x0;
   
   // Load common libraries
   gSystem->Load("libCore.so");

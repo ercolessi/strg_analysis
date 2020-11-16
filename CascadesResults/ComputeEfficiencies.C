@@ -19,11 +19,11 @@ Double_t GetEEfromZDC ( TFile* lfilename , Float_t lZPCpp, Float_t lZNCpp, Float
 
 void ComputeEfficiencies(){
 
-	TFile* file = new TFile("FixEpspart.root","READ");
+	TFile* file = new TFile("~/Scaricati/MC15g3c3.root","READ");
 		//"MCLHC17j_GP.root"
-	const char* ZDCFilename = "ExtractedZDCPercentile_15fEffpart.root"; //""
+	const char* ZDCFilename = "ExtractedZDCPercentile_train.root"; //""
     const char* ZDCpartfilename = ZDCFilename; //""
-	const char* outputname = "EventCountLoss_15fCommitTest.root";
+	const char* outputname = "EventCountLoss_15fTrainTest.root";
     TFile* Read = new TFile (ZDCFilename);
     TFile* ZDCpartfile = new TFile (ZDCpartfilename);
     cout << " Effective Energy File: ..." <<  ZDCFilename << "\n\n" << endl;

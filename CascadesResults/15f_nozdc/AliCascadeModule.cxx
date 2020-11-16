@@ -2227,7 +2227,7 @@ void AliCascadeModule::DoAnalysis(){
     cout<<"--------------------------------------------------------"<<endl;
     cout<<" Will now loop over events, please wait..."<<endl;
     Long_t lNEvents = 0;
-    for(Long_t iEv = 0; iEv<lTreeEvent->GetEntries(); iEv++) {
+    for(Long_t iEv = 0; iEv<lTreeEvent->GetEntries()/1000; iEv++) {
         lTreeEvent->GetEntry(iEv);
         if( iEv % ( lTreeEvent->GetEntries() / 10 ) == 0 ) cout<<" At Event "<<iEv<<" out of "<<lTreeEvent->GetEntries()<<endl;
         // check MV Pileup rejection
@@ -2654,7 +2654,7 @@ void AliCascadeModule::DoAnalysis(){
     //================================================================
     cout<<endl;
     cout<<"--------------- Real Data File Loop 2 ------------------"<<endl;
-    for(Long_t icand = 0;icand<lNCandidates;icand++){
+    for(Long_t icand = 0;icand<lNCandidates/1000;icand++){
         lTree->GetEntry(icand);
 
         // check MV Pileup rejection
@@ -3110,7 +3110,7 @@ void AliCascadeModule::DoAnalysis(){
         //if( fMVPileupSwitch && !fMVPileupFlag ) continue;
         // Multiplicity Switch
 
-        if(fEvSel_AllSelections==0) return;
+        if(fEvSel_AllSelections==0) continue;
 
         if( fPerformMultiplicityStudy == kTRUE &&  //inside mult bin
             fCentrality>lLoMultBoundMC &&
@@ -3125,7 +3125,7 @@ void AliCascadeModule::DoAnalysis(){
     //Linking to Tree=================================================
     //--- Base Variables ----------------------------------------------
     lTreeMC->SetBranchAddress("fTreeCascVarCharge"  , &lCharge  );
-    lTreeMC->SetBranchAddress("fTreeCascVarEvSel_AllSelections"  , &fEvSel_AllSelections  );
+    lTreeMC->SetBranchAddress("fTreeCascVarRunEvSel_AllSelections"  , &fEvSel_AllSelections  );
     lTreeMC->SetBranchAddress("fTreeCascVarPosEta"  , &lPosEta  );
     lTreeMC->SetBranchAddress("fTreeCascVarNegEta"  , &lNegEta  );
     lTreeMC->SetBranchAddress("fTreeCascVarBachEta" , &lBachEta );
@@ -3223,7 +3223,7 @@ void AliCascadeModule::DoAnalysis(){
         // check MV Pileup rejection
         //if( fMVPileupSwitch && !fMVPileupFlag ) continue;
         
-        if(fEvSel_AllSelections==0) return;
+        if(fEvSel_AllSelections==0) continue;
 
 
         //Multiplicity Switch
@@ -4354,6 +4354,8 @@ void AliCascadeModule::DoAnalysis(){
 
     fHistPureEfficiency->Write();
     fHistEfficiency->Write();
+    fHistEffNumerator->Write();
+    fHistEffDenominator->Write();	
 
     if(fWhichParticle == "XiMinus"   ) fHistPtXiMinus     ->  Write();
     if(fWhichParticle == "XiPlus"    ) fHistPtXiPlus      ->  Write();

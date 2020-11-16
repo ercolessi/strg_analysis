@@ -2735,7 +2735,7 @@ void AliCascadeModule::DoAnalysis(){
     //================================================================
     cout<<endl;
     cout<<"--------------- Real Data File Loop 2 ------------------"<<endl;
-    for(Long_t icand = 0;icand<lNCandidates;icand++){
+    for(Long_t icand = 0;icand<lNCandidates/1000;icand++){
         lTree->GetEntry(icand);
 
         // check MV Pileup rejection
@@ -3178,11 +3178,11 @@ void AliCascadeModule::DoAnalysis(){
         lHiMultBoundMC = 100.;
     }
 
-    Bool_t fEvSel_INELgtZERO = 0;
+    Bool_t fEvSel_AllSelections = 0;
 
     lTreeEventMC->SetBranchAddress("fCentrality",   &fCentrality);
     lTreeEventMC->SetBranchAddress("fMVPileupFlag", &fMVPileupFlag);
-    lTreeEventMC->SetBranchAddress("fEvSel_INELgtZERO", &fEvSel_INELgtZERO);
+    lTreeEventMC->SetBranchAddress("fEvSel_AllSelections", &fEvSel_AllSelections);
 
 
     cout<<"--------------------------------------------------------"<<endl;
@@ -3192,9 +3192,9 @@ void AliCascadeModule::DoAnalysis(){
         lTreeEventMC->GetEntry(iEv);
         if( iEv % ( lTreeEventMC->GetEntries() / 10 ) == 0 ) cout<<" At Event "<<iEv<<" out of "<<lTreeEventMC->GetEntries()<<endl;
         // check MV Pileup rejection
-        if( fMVPileupSwitch && !fMVPileupFlag ) continue;
+        //if( fMVPileupSwitch && !fMVPileupFlag ) continue;
         //check INEL>0
-        if (fEvSel_INELgtZERO == 0) continue;
+        if(fEvSel_AllSelections==0) continue;
        
        	//Count events
         if( fPerformMultiplicityStudy == kTRUE &&  //inside mult bin
@@ -3297,8 +3297,8 @@ void AliCascadeModule::DoAnalysis(){
     lTreeMC->SetBranchAddress("fTreeCascVarZNApp", &fZNApp);
     lTreeMC->SetBranchAddress("fTreeCascVarZNCpp", &fZNCpp);
     lTreeMC->SetBranchAddress("fTreeCascVarRun", &fRun);
-    lTreeMC->SetBranchAddress("fTreeCascVarEvSel_INELgtZERO", &fEvSel_INELgtZERO);
-
+    lTreeMC->SetBranchAddress("fTreeCascVarRunEvSel_AllSelections"  , &fEvSel_AllSelections  );
+    
     //--- MV pileup flag -----------------------------------------------
     lTreeMC->SetBranchAddress("fTreeCascVarMVPileupFlag", &fMVPileupFlag);
     //================================================================
@@ -3313,10 +3313,10 @@ void AliCascadeModule::DoAnalysis(){
         lTreeMC->GetEntry(icand);
 
         // check MV Pileup rejection
-        if( fMVPileupSwitch && !fMVPileupFlag ) continue;
+        //if( fMVPileupSwitch && !fMVPileupFlag ) continue;
 
         //check INEL>0
-        if (fEvSel_INELgtZERO == 0) continue;
+        if(fEvSel_AllSelections==0) continue;
 
         //Multiplicity Switch
         lMultiplicity = (Double_t)fCentrality;
