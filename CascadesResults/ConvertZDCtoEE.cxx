@@ -5,7 +5,7 @@
 using namespace std;
 
 
-void ConvertZDCtoEE( const char* filename = "~/Scaricati/MC15g3c3.root", const char* period = "train")
+void ConvertZDCtoEE( const char* filename = "Files/MC15g3c3.root", const char* period = "15f")
 {  
     //Variables
     Float_t ZPCpp, ZNCpp, ZPApp, ZNApp;
@@ -15,7 +15,7 @@ void ConvertZDCtoEE( const char* filename = "~/Scaricati/MC15g3c3.root", const c
 
     //Open file and get Tree 
     TFile* Read = new TFile (filename);
-    TTree * T = (TTree *)Read->Get("PWGLF_StrVsMult_MC/fTreeEvent");
+    TTree * T = (TTree *)Read->Get("PWGLF_StrVsMult/fTreeEvent");
   
     //Set branches
     T->SetBranchAddress("fZPCpp",&ZPCpp);

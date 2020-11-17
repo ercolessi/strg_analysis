@@ -2735,7 +2735,7 @@ void AliCascadeModule::DoAnalysis(){
     //================================================================
     cout<<endl;
     cout<<"--------------- Real Data File Loop 2 ------------------"<<endl;
-    for(Long_t icand = 0;icand<lNCandidates/1000;icand++){
+    for(Long_t icand = 0;icand<lNCandidates;icand++){
         lTree->GetEntry(icand);
 
         // check MV Pileup rejection
