@@ -2227,7 +2227,7 @@ void AliCascadeModule::DoAnalysis(){
     cout<<"--------------------------------------------------------"<<endl;
     cout<<" Will now loop over events, please wait..."<<endl;
     Long_t lNEvents = 0;
-    for(Long_t iEv = 0; iEv<lTreeEvent->GetEntries()/1000; iEv++) {
+    for(Long_t iEv = 0; iEv<lTreeEvent->GetEntries(); iEv++) {
         lTreeEvent->GetEntry(iEv);
         if( iEv % ( lTreeEvent->GetEntries() / 10 ) == 0 ) cout<<" At Event "<<iEv<<" out of "<<lTreeEvent->GetEntries()<<endl;
         // check MV Pileup rejection
@@ -2284,8 +2284,6 @@ void AliCascadeModule::DoAnalysis(){
     Int_t lCharge = 0;
     //Multiplicity Variable
     Float_t lMultiplicity = -1.;
-    Bool_t ITSrefitAllPtOneLeg = kTRUE; 
-    Bool_t TOFmatchAllPtOneLeg = kTRUE;
     Bool_t ITSrefitLowPtBothLegs;
     Bool_t TOFmatchHighPtBothLegs;
     Bool_t TOFmatchHighPtOneLeg;
@@ -2422,8 +2420,12 @@ void AliCascadeModule::DoAnalysis(){
             //Compute 3D DCA Cascade to PV
             lDCACascToPV = TMath::Sqrt( lDCAxyCascToPV*lDCAxyCascToPV + lDCAzCascToPV*lDCAzCascToPV );
 
-            ITSrefitAllPtOneLeg = ((lPosTrackStatus & kITSrefit) || (lNegTrackStatus & kITSrefit) || (lBachTrackStatus & kITSrefit));
-            TOFmatchAllPtOneLeg = (lPosTOFExpTDiff !=-2500) || (lNegTOFExpTDiff !=-2500) || (lBachTOFExpTDiff !=-2500);
+            Bool_t ITSrefitAllPtOneLeg = kFALSE; 
+            Bool_t TOFmatchAllPtOneLeg = kFALSE;
+            if ((lPosTrackStatus & kITSrefit) || (lNegTrackStatus & kITSrefit) || (lBachTrackStatus & kITSrefit))
+                ITSrefitAllPtOneLeg = kTRUE;
+            if ((TMath::Abs(lPosTOFExpTDiff+2500.)>1e-6) || (TMath::Abs(lNegTOFExpTDiff+2500.)>1e-6) || (TMath::Abs(lBachTOFExpTDiff+2500.)>1e-6))
+                TOFmatchAllPtOneLeg = kTRUE;
            
             //Now check validity
             if( lRap<fRapidityBoundaryUpper && lRap>fRapidityBoundaryLower &&
@@ -2654,7 +2656,7 @@ void AliCascadeModule::DoAnalysis(){
     //================================================================
     cout<<endl;
     cout<<"--------------- Real Data File Loop 2 ------------------"<<endl;
-    for(Long_t icand = 0;icand<lNCandidates/1000;icand++){
+    for(Long_t icand = 0;icand<lNCandidates;icand++){
         lTree->GetEntry(icand);
 
         // check MV Pileup rejection
@@ -2676,8 +2678,12 @@ void AliCascadeModule::DoAnalysis(){
         //Compute 3D DCA Cascade to PV
         lDCACascToPV = TMath::Sqrt( lDCAxyCascToPV*lDCAxyCascToPV + lDCAzCascToPV*lDCAzCascToPV );
 
-        ITSrefitAllPtOneLeg = ((lPosTrackStatus & kITSrefit) || (lNegTrackStatus & kITSrefit) || (lBachTrackStatus & kITSrefit));
-        TOFmatchAllPtOneLeg = (lPosTOFExpTDiff !=-2500) || (lNegTOFExpTDiff !=-2500) || (lBachTOFExpTDiff !=-2500); 
+        Bool_t ITSrefitAllPtOneLeg = kFALSE; 
+        Bool_t TOFmatchAllPtOneLeg = kFALSE;
+        if ((lPosTrackStatus & kITSrefit) || (lNegTrackStatus & kITSrefit) || (lBachTrackStatus & kITSrefit))
+            ITSrefitAllPtOneLeg = kTRUE;
+         if ((TMath::Abs(lPosTOFExpTDiff+2500.)>1e-6) || (TMath::Abs(lNegTOFExpTDiff+2500.)>1e-6) || (TMath::Abs(lBachTOFExpTDiff+2500.)>1e-6))
+            TOFmatchAllPtOneLeg = kTRUE;
         
         //--- TPC dE/dx QA
         Float_t lPosP  = TMath::Sqrt( lPosPx*lPosPx + lPosPy*lPosPy + lPosPz*lPosPz );
@@ -3095,7 +3101,7 @@ void AliCascadeModule::DoAnalysis(){
     }
 
     Bool_t fEvSel_AllSelections = 0;
-
+ 
     lTreeEventMC->SetBranchAddress("fCentrality",   &fCentrality);
     lTreeEventMC->SetBranchAddress("fMVPileupFlag", &fMVPileupFlag);
     lTreeEventMC->SetBranchAddress("fEvSel_AllSelections", &fEvSel_AllSelections);
@@ -3480,8 +3486,12 @@ void AliCascadeModule::DoAnalysis(){
 
         }
         
-        ITSrefitAllPtOneLeg = ((lPosTrackStatus & kITSrefit) || (lNegTrackStatus & kITSrefit) || (lBachTrackStatus & kITSrefit));
-        TOFmatchAllPtOneLeg = (lPosTOFExpTDiff !=-2500) || (lNegTOFExpTDiff !=-2500) || (lBachTOFExpTDiff !=-2500);  
+        Bool_t ITSrefitAllPtOneLeg = kFALSE; 
+        Bool_t TOFmatchAllPtOneLeg = kFALSE;
+        if ((lPosTrackStatus & kITSrefit) || (lNegTrackStatus & kITSrefit) || (lBachTrackStatus & kITSrefit))
+            ITSrefitAllPtOneLeg = kTRUE;
+        if ((TMath::Abs(lPosTOFExpTDiff+2500.)>1e-6) || (TMath::Abs(lNegTOFExpTDiff+2500.)>1e-6) || (TMath::Abs(lBachTOFExpTDiff+2500.)>1e-6))
+            TOFmatchAllPtOneLeg = kTRUE;
 
         //Now check validity
         if( lRap<fRapidityBoundaryUpper && lRap>fRapidityBoundaryLower &&
