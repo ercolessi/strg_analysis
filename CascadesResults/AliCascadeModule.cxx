@@ -2295,9 +2295,11 @@ void AliCascadeModule::DoAnalysis(){
         lTreeEvent->GetEntry(iEv);
         if( iEv % ( lTreeEvent->GetEntries() / 10 ) == 0 ) cout<<" At Event "<<iEv<<" out of "<<lTreeEvent->GetEntries()<<endl;
         // check MV Pileup rejection
-        if( fMVPileupSwitch && !fMVPileupFlag ) continue;
+        //if( fMVPileupSwitch && !fMVPileupFlag ) continue;
         // check distance to closest non empty BC
-        if( TMath::Abs( fClosestNonEmptyBC ) < fMinDistToClosestNonEmptyBC ) continue; 
+        //if( TMath::Abs( fClosestNonEmptyBC ) < fMinDistToClosestNonEmptyBC ) continue; 
+
+        if ( fRun == 226476 || fRun == 226170 || fRun == 225768 || fRun == 225766 || fRun == 225763 || fRun == 225762 || fRun == 225757 || fRun == 225753 ) continue;
          
         //Get ZDCPercentile
         fZDCCentrality = GetEEfromZDC(Read, fZPCpp, fZNCpp, fZPApp, fZNApp, fRun); 
@@ -2357,8 +2359,6 @@ void AliCascadeModule::DoAnalysis(){
     //Multiplicity Variable
     Float_t lMultiplicity = -1.;
     Float_t lCascZDCPercentile = -1.;
-    Bool_t ITSrefitAllPtOneLeg; 
-    Bool_t TOFmatchAllPtOneLeg;
     Bool_t ITSrefitLowPtBothLegs;
     Bool_t TOFmatchHighPtBothLegs;
     Bool_t TOFmatchHighPtOneLeg;
@@ -2485,10 +2485,12 @@ void AliCascadeModule::DoAnalysis(){
             lTree->GetEntry(icand);
 
             // check MV Pileup rejection
-            if( fMVPileupSwitch && !fMVPileupFlag ) continue;
+            //if( fMVPileupSwitch && !fMVPileupFlag ) continue;
 
             // check distance to closest non empty BC
-            if( TMath::Abs( fClosestNonEmptyBC ) < fMinDistToClosestNonEmptyBC ) continue;
+            //if( TMath::Abs( fClosestNonEmptyBC ) < fMinDistToClosestNonEmptyBC ) continue;
+
+            if ( fRun == 226476 || fRun == 226170 || fRun == 225768 || fRun == 225766 || fRun == 225763 || fRun == 225762 || fRun == 225757 || fRun == 225753 ) continue;
 
             //Multiplicity Switch -- use integrated sample for peak finding
             lMultiplicity = (Double_t)fCentrality;
@@ -2503,9 +2505,13 @@ void AliCascadeModule::DoAnalysis(){
             //Compute 3D DCA Cascade to PV
             lDCACascToPV = TMath::Sqrt( lDCAxyCascToPV*lDCAxyCascToPV + lDCAzCascToPV*lDCAzCascToPV );
 
-            ITSrefitAllPtOneLeg = ((lPosTrackStatus & kITSrefit) || (lNegTrackStatus & kITSrefit) || (lBachTrackStatus & kITSrefit));
-            TOFmatchAllPtOneLeg = (lPosTOFExpTDiff !=-2500) || (lNegTOFExpTDiff !=-2500) || (lBachTOFExpTDiff !=-2500);
-            
+            Bool_t ITSrefitAllPtOneLeg = kFALSE; 
+            Bool_t TOFmatchAllPtOneLeg = kFALSE;
+            if ((lPosTrackStatus & kITSrefit) || (lNegTrackStatus & kITSrefit) || (lBachTrackStatus & kITSrefit))
+                ITSrefitAllPtOneLeg = kTRUE;
+            if ((TMath::Abs(lPosTOFExpTDiff+2500.)>1e-6) || (TMath::Abs(lNegTOFExpTDiff+2500.)>1e-6) || (TMath::Abs(lBachTOFExpTDiff+2500.)>1e-6))
+                TOFmatchAllPtOneLeg = kTRUE;
+
             //Now check validity
             if( lRap<fRapidityBoundaryUpper && lRap>fRapidityBoundaryLower &&
                 (//charge condition (x-check)
@@ -2739,10 +2745,12 @@ void AliCascadeModule::DoAnalysis(){
         lTree->GetEntry(icand);
 
         // check MV Pileup rejection
-        if( fMVPileupSwitch && !fMVPileupFlag ) continue;
+        //if( fMVPileupSwitch && !fMVPileupFlag ) continue;
 
         // check distance to closest non empty BC
-        if( TMath::Abs( fClosestNonEmptyBC ) < fMinDistToClosestNonEmptyBC ) continue; 
+        //if( TMath::Abs( fClosestNonEmptyBC ) < fMinDistToClosestNonEmptyBC ) continue; 
+
+        if ( fRun == 226476 || fRun == 226170 || fRun == 225768 || fRun == 225766 || fRun == 225763 || fRun == 225762 || fRun == 225757 || fRun == 225753 ) continue;
        
         //Multiplicity Switch
         lMultiplicity = (Double_t)fCentrality;
@@ -2760,8 +2768,12 @@ void AliCascadeModule::DoAnalysis(){
         //Compute 3D DCA Cascade to PV
         lDCACascToPV = TMath::Sqrt( lDCAxyCascToPV*lDCAxyCascToPV + lDCAzCascToPV*lDCAzCascToPV );
 
-        ITSrefitAllPtOneLeg = ((lPosTrackStatus & kITSrefit) || (lNegTrackStatus & kITSrefit) || (lBachTrackStatus & kITSrefit));
-        TOFmatchAllPtOneLeg = (lPosTOFExpTDiff !=-2500) || (lNegTOFExpTDiff !=-2500) || (lBachTOFExpTDiff !=-2500); 
+        Bool_t ITSrefitAllPtOneLeg = kFALSE; 
+        Bool_t TOFmatchAllPtOneLeg = kFALSE;
+        if ((lPosTrackStatus & kITSrefit) || (lNegTrackStatus & kITSrefit) || (lBachTrackStatus & kITSrefit))
+            ITSrefitAllPtOneLeg = kTRUE;
+        if ((TMath::Abs(lPosTOFExpTDiff+2500.)>1e-6) || (TMath::Abs(lNegTOFExpTDiff+2500.)>1e-6) || (TMath::Abs(lBachTOFExpTDiff+2500.)>1e-6))
+            TOFmatchAllPtOneLeg = kTRUE;
 
         //--- TPC dE/dx QA
         Float_t lPosP  = TMath::Sqrt( lPosPx*lPosPx + lPosPy*lPosPy + lPosPz*lPosPz );
@@ -3180,6 +3192,7 @@ void AliCascadeModule::DoAnalysis(){
 
     Bool_t fEvSel_AllSelections = 0;
 
+    lTreeEventMC->SetBranchAddress("fRun",   &fRun);
     lTreeEventMC->SetBranchAddress("fCentrality",   &fCentrality);
     lTreeEventMC->SetBranchAddress("fMVPileupFlag", &fMVPileupFlag);
     lTreeEventMC->SetBranchAddress("fEvSel_AllSelections", &fEvSel_AllSelections);
@@ -3195,6 +3208,8 @@ void AliCascadeModule::DoAnalysis(){
         //if( fMVPileupSwitch && !fMVPileupFlag ) continue;
         //check INEL>0
         if(fEvSel_AllSelections==0) continue;
+
+        if ( fRun == 226476 || fRun == 226170 || fRun == 225768 || fRun == 225766 || fRun == 225763 || fRun == 225762 || fRun == 225757 || fRun == 225753 ) continue;
        
        	//Count events
         if( fPerformMultiplicityStudy == kTRUE &&  //inside mult bin
@@ -3317,6 +3332,8 @@ void AliCascadeModule::DoAnalysis(){
 
         //check INEL>0
         if(fEvSel_AllSelections==0) continue;
+
+        if ( fRun == 226476 || fRun == 226170 || fRun == 225768 || fRun == 225766 || fRun == 225763 || fRun == 225762 || fRun == 225757 || fRun == 225753 ) continue;
 
         //Multiplicity Switch
         lMultiplicity = (Double_t)fCentrality;
@@ -3573,9 +3590,13 @@ void AliCascadeModule::DoAnalysis(){
 
         }
         
-        ITSrefitAllPtOneLeg = ((lPosTrackStatus & kITSrefit) || (lNegTrackStatus & kITSrefit) || (lBachTrackStatus & kITSrefit));
-        TOFmatchAllPtOneLeg = (lPosTOFExpTDiff !=-2500) || (lNegTOFExpTDiff !=-2500) || (lBachTOFExpTDiff !=-2500);  
-
+        Bool_t ITSrefitAllPtOneLeg = kFALSE; 
+        Bool_t TOFmatchAllPtOneLeg = kFALSE;
+        if ((lPosTrackStatus & kITSrefit) || (lNegTrackStatus & kITSrefit) || (lBachTrackStatus & kITSrefit))
+            ITSrefitAllPtOneLeg = kTRUE;
+        if ((TMath::Abs(lPosTOFExpTDiff+2500.)>1e-6) || (TMath::Abs(lNegTOFExpTDiff+2500.)>1e-6) || (TMath::Abs(lBachTOFExpTDiff+2500.)>1e-6))
+            TOFmatchAllPtOneLeg = kTRUE;
+        
         //Now check validity
         if( lRap<fRapidityBoundaryUpper && lRap>fRapidityBoundaryLower &&
             (//charge condition (x-check)
