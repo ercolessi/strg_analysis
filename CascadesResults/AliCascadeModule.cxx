@@ -3209,8 +3209,6 @@ void AliCascadeModule::DoAnalysis(){
         //check INEL>0
         if(fEvSel_AllSelections==0) continue;
 
-        if ( fRun == 226476 || fRun == 226170 || fRun == 225768 || fRun == 225766 || fRun == 225763 || fRun == 225762 || fRun == 225757 || fRun == 225753 ) continue;
-       
        	//Count events
         if( fPerformMultiplicityStudy == kTRUE &&  //inside mult bin
            	fCentrality>lLoMultBoundMC &&
@@ -3332,8 +3330,6 @@ void AliCascadeModule::DoAnalysis(){
 
         //check INEL>0
         if(fEvSel_AllSelections==0) continue;
-
-        if ( fRun == 226476 || fRun == 226170 || fRun == 225768 || fRun == 225766 || fRun == 225763 || fRun == 225762 || fRun == 225757 || fRun == 225753 ) continue;
 
         //Multiplicity Switch
         lMultiplicity = (Double_t)fCentrality;
@@ -3596,7 +3592,7 @@ void AliCascadeModule::DoAnalysis(){
             ITSrefitAllPtOneLeg = kTRUE;
         if ((TMath::Abs(lPosTOFExpTDiff+2500.)>1e-6) || (TMath::Abs(lNegTOFExpTDiff+2500.)>1e-6) || (TMath::Abs(lBachTOFExpTDiff+2500.)>1e-6))
             TOFmatchAllPtOneLeg = kTRUE;
-        
+
         //Now check validity
         if( lRap<fRapidityBoundaryUpper && lRap>fRapidityBoundaryLower &&
             (//charge condition (x-check)
