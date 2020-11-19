@@ -27,7 +27,7 @@ void DoSystematics(
 
   Bool_t DoEE = !DoMult; 
 
-  TFile* InputFile = new TFile(Form( "Files/Results-%s-13TeV-V0M_%03.0f_%03.0f_ZDC_%03.0f_%03.0f.root", lCascType.Data(), lMultBoundLo, lMultBoundHi, lEEBoundLo, lEEBoundHi ));
+  TFile* InputFile = new TFile(Form( "Results-%s-13TeV-V0M_%03.0f_%03.0f_ZDC_%03.0f_%03.0f.root", Type.Data(), LowMult, HighMult, LowEE, HighEE ));
 
   TH1F* hV0Radius = makeSystPlotsV0s(Type,"V0M",LowMult,HighMult,LowEE,HighEE,"V0Radius");
   TH1F* hCascRadius = makeSystPlotsV0s(Type,"V0M",LowMult,HighMult,LowEE,HighEE,"CascRadius");
@@ -371,10 +371,10 @@ TH1F* makeSystPlotsV0s(
   TFile* InputFile[nfiles];   
 
   //Set data files
-  TString lSystFile = "Files/Results-Systematics";
+  TString lSystFile = "FilesSyst/Results-Systematics";
   lSystFile.Append( Form( "-%s-13TeV-V0M_%03.0f_%03.0f_ZDC_%03.0f_%03.0f-", lCascType.Data(), lMultBoundLo, lMultBoundHi, lEEBoundLo, lEEBoundHi ) );
   
-  lDataFilename[0] = Form( "Files/Results-%s-13TeV-V0M_%03.0f_%03.0f_ZDC_%03.0f_%03.0f.root", lCascType.Data(), lMultBoundLo, lMultBoundHi, lEEBoundLo, lEEBoundHi );
+  lDataFilename[0] = Form( "FilesSyst/Results-%s-13TeV-V0M_%03.0f_%03.0f_ZDC_%03.0f_%03.0f.root", lCascType.Data(), lMultBoundLo, lMultBoundHi, lEEBoundLo, lEEBoundHi );
   InputFile[0] = new TFile(lDataFilename[0].Data(),"READ");
   for (int i = 1; i <= nfiles-1; i++){
     lDataFilename[i] = lSystFile + lWhichSystVar + Form("-%i.root",i);
