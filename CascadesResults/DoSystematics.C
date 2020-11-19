@@ -148,19 +148,19 @@ void DoSystematics(
   //Other contributions:
   Double_t MaterialBudget = 0.04;
   Double_t MultIndipEffic = 0.02;
-  Double_t MultIndipFeedDown = 0.02;
+  //Double_t MultIndipFeedDown = 0.02;
 
   //Total systematics
   TH1F* hSystTot = (TH1F*)hV0Radius->Clone("hSystTot");  
   hSystTot->Reset();
   for (int i = 1; i<= hV0Radius->GetNbinsX(); i++){
       hSystTot->SetBinContent(i, 
-        TMath::Sqrt(hSystOthers->GetBinContent(i)*hSystOthers->GetBinContent(i) + 
-          hSystTopological->GetBinContent(i)*hSystTopological->GetBinContent(i)) +
+        TMath::Sqrt(
+          hSystOthers->GetBinContent(i)*hSystOthers->GetBinContent(i) +
+          hSystTopological->GetBinContent(i)*hSystTopological->GetBinContent(i) +
           MaterialBudget*MaterialBudget +
-          MultIndipEffic*MultIndipEffic +
-          MultIndipFeedDown*MultIndipFeedDown
-      );
+          MultIndipEffic*MultIndipEffic )
+        );        
   }
 
 
@@ -256,19 +256,19 @@ void DoSystematics(
   hSigExtBinCount->SetMarkerStyle(1);
   hSigExtBinCount->SetLineWidth(2);
   hPLT->SetTitle("Contribution of Selection Variables");
-  hPLT->Draw("L");
-  hV0Mass->Draw("SAME L");
-  if (Type == "OmegaMinus" || Type == "OmegaPlus") hCompetingSpecies->Draw("SAME L");
-  hTPCNClusters->Draw("SAME L");
-  hTPCNSigmas->Draw("SAME L");
-  hSigExtBinCount->Draw("SAME L");
+  hPLT->Draw("HIST ");
+  hV0Mass->Draw("HIST SAME ");
+  if (Type == "OmegaMinus" || Type == "OmegaPlus") hCompetingSpecies->Draw("HIST SAME ");
+  hTPCNClusters->Draw("HIST SAME ");
+  hTPCNSigmas->Draw("HIST SAME ");
+  hSigExtBinCount->Draw("HIST SAME ");
   l1->Draw("SAME");
   Sel->SaveAs(Form("images/%s-SelectionSystematics_V0-%03.0f_%03.0f-ZDC-%03.0f_%03.0f.png",Type.Data(),LowMult, HighMult, LowEE, HighEE));
 
   //Contributions Displayed
   TCanvas* cn = new TCanvas("cn","",950,900);
-  Float_t constSyst = TMath::Sqrt(MaterialBudget*MaterialBudget + MultIndipEffic*MultIndipEffic  + MultIndipFeedDown*MultIndipFeedDown);
-  TLine* lconstSyst = new TLine(0.8,constSyst,6.5,constSyst);
+  Float_t constSyst = TMath::Sqrt(MaterialBudget*MaterialBudget + MultIndipEffic*MultIndipEffic);
+  TLine* lconstSyst = new TLine(1.,constSyst,6.5,constSyst);
   
   TLegend* legend = new TLegend (0.14,0.7,0.6,0.9);
   legend->AddEntry(hSystTopological,"Topological systematics","L");
@@ -288,7 +288,7 @@ void DoSystematics(
 
   hSystTot->Draw();
   hSystTot->SetYTitle("Systematics");
-  hSystTot->GetYaxis()->SetRangeUser(-0.005,.2);
+  hSystTot->GetYaxis()->SetRangeUser(-0.005,.1);
   hSystTot->GetYaxis()->SetTitleOffset(1.);
   hSystTot->SetTitle(Form("Systematics contributions for %s",Type.Data()));
   hSystOthers->Draw("SAME");
@@ -305,7 +305,7 @@ void DoSystematics(
   TH1F* hSystPt = (TH1F*)lHistPt->Clone("hSystPt");
   for (int i = 1; i<= nbins; i++){
     hSystPt->SetBinContent(i,lHistPt->GetBinContent(i));
-    hSystPt->SetBinError(i, TMath::Sqrt(hSystTot->GetBinContent(i)*hSystTot->GetBinContent(i))*lHistPt->GetBinContent(i));
+    hSystPt->SetBinError( i, hSystTot->GetBinContent(i) * lHistPt->GetBinContent(i));
     hSystPt->SetMarkerStyle(1);
   }
 
@@ -374,7 +374,7 @@ TH1F* makeSystPlotsV0s(
   TString lSystFile = "FilesSyst/Results-Systematics";
   lSystFile.Append( Form( "-%s-13TeV-V0M_%03.0f_%03.0f_ZDC_%03.0f_%03.0f-", lCascType.Data(), lMultBoundLo, lMultBoundHi, lEEBoundLo, lEEBoundHi ) );
   
-  lDataFilename[0] = Form( "FilesSyst/Results-%s-13TeV-V0M_%03.0f_%03.0f_ZDC_%03.0f_%03.0f.root", lCascType.Data(), lMultBoundLo, lMultBoundHi, lEEBoundLo, lEEBoundHi );
+  lDataFilename[0] = Form( "Results-%s-13TeV-V0M_%03.0f_%03.0f_ZDC_%03.0f_%03.0f.root", lCascType.Data(), lMultBoundLo, lMultBoundHi, lEEBoundLo, lEEBoundHi );
   InputFile[0] = new TFile(lDataFilename[0].Data(),"READ");
   for (int i = 1; i <= nfiles-1; i++){
     lDataFilename[i] = lSystFile + lWhichSystVar + Form("-%i.root",i);
@@ -429,14 +429,14 @@ TH1F* makeSystPlotsV0s(
 
   //Prepare Canvas
   //Max Deviation
-  hMaxDev->GetXaxis()->SetRangeUser(0.7,6.5);
+  hMaxDev->GetXaxis()->SetRangeUser(1.,6.5);
   hMaxDev->GetYaxis()->SetRangeUser(-0.0005,.1);
   hMaxDev->SetYTitle("max rel. dev.");
   hMaxDev->SetTitle(Form("%s",lWhichSystVar.Data()));
   hMaxDev->GetYaxis()->SetTitleSize(0.05);
   hMaxDev->GetYaxis()->SetTitleOffset(1.0);
   hMaxDev->GetXaxis()->SetTitleSize(0.05);
-  hMaxDev->GetXaxis()->SetTitleOffset(0.8);
+  hMaxDev->GetXaxis()->SetTitleOffset(1.);
   hMaxDev->SetMarkerStyle(20);
   hMaxDev->SetMarkerSize(1.1);
   hMaxDev->SetMarkerColor(kBlack);
@@ -475,7 +475,7 @@ TH1F* makeSystPlotsV0s(
   legend->AddEntry(hCut[3],"very tight","LEP");
 
   for (int k = 0; k < nfiles-1; k++){
-    hCut[k]->GetXaxis()->SetRangeUser(0.7,6.5);
+    hCut[k]->GetXaxis()->SetRangeUser(1.,6.5);
     hCut[k]->GetYaxis()->SetRangeUser(0.9,1.1);
     hCut[k]->SetYTitle("Yield^{syst-cut} / Yield^{def-cut}");
     hCut[k]->SetTitle(Form("%s",lWhichSystVar.Data()));
