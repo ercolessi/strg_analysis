@@ -145,6 +145,8 @@ void ComputeEfficiencies(){
         	lTreeEvent->GetEntry(iEv);
         	if( iEv % ( lTreeEvent->GetEntries() / 10 ) == 0 ) cout<<" At Event "<<iEv<<" out of "<<lTreeEvent->GetEntries()<<endl;
   
+  			if ( fRun == 226476 || fRun == 226170 || fRun == 225768 || fRun == 225766 || fRun == 225763 || fRun == 225762 || fRun == 225757 || fRun == 225753 ) continue;
+
           	//Get ZDCPercentile
         	fZDCCentrality = GetEEfromZDC(Read, ZPCpp, ZNCpp, ZPApp, ZNApp, fRun); 
             
