@@ -4,7 +4,7 @@
 
 double ErrorInRatio ( Double_t A, Double_t Aerr, Double_t B, Double_t Berr );
 
-TH1F* makeSystPlotsV0s(TString lV0Type = "XiMinus", 
+TH1F* makeSystPlotsV0s(TString lV0Type = "OmegaMinus", 
 	TString lWhichEstimator = "V0M", 
 	Double_t lMultBoundLo = 0.0, 
 	Double_t lMultBoundHi = 100.0, 
@@ -18,7 +18,7 @@ void DivideAndComputeRogerBarlow( TH1F* h1, TH1F *h2 );
 //------------------- MAIN FUNCTION ----------------------------
 //--------------------------------------------------------------
 void DoSystematics(
-	TString Type = "XiMinus", 
+	TString Type = "OmegaMinus", 
 	Double_t LowMult = 0.0, 
 	Double_t HighMult = 100.0, 
 	Double_t LowEE = 0.0, 
@@ -288,7 +288,7 @@ void DoSystematics(
 
   hSystTot->Draw();
   hSystTot->SetYTitle("Systematics");
-  hSystTot->GetYaxis()->SetRangeUser(-0.005,.1);
+  hSystTot->GetYaxis()->SetRangeUser(-0.005,.3);
   hSystTot->GetYaxis()->SetTitleOffset(1.);
   hSystTot->SetTitle(Form("Systematics contributions for %s",Type.Data()));
   hSystOthers->Draw("SAME");
@@ -429,8 +429,8 @@ TH1F* makeSystPlotsV0s(
 
   //Prepare Canvas
   //Max Deviation
-  hMaxDev->GetXaxis()->SetRangeUser(1.,6.5);
-  hMaxDev->GetYaxis()->SetRangeUser(-0.0005,.1);
+  hMaxDev->GetXaxis()->SetRangeUser(1.,5.5);
+  hMaxDev->GetYaxis()->SetRangeUser(-0.0005,.2);
   hMaxDev->SetYTitle("max rel. dev.");
   hMaxDev->SetTitle(Form("%s",lWhichSystVar.Data()));
   hMaxDev->GetYaxis()->SetTitleSize(0.05);
@@ -475,7 +475,7 @@ TH1F* makeSystPlotsV0s(
   legend->AddEntry(hCut[3],"very tight","LEP");
 
   for (int k = 0; k < nfiles-1; k++){
-    hCut[k]->GetXaxis()->SetRangeUser(1.,6.5);
+    hCut[k]->GetXaxis()->SetRangeUser(1.,5.5);
     hCut[k]->GetYaxis()->SetRangeUser(0.9,1.1);
     hCut[k]->SetYTitle("Yield^{syst-cut} / Yield^{def-cut}");
     hCut[k]->SetTitle(Form("%s",lWhichSystVar.Data()));

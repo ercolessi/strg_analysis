@@ -2829,10 +2829,10 @@ void AliCascadeModule::DoAnalysis(){
             lMinTrackLength           >  fCutMinTrackLength      &&
 
             //Competing Species Rejection (only for Omegas)
-            TMath::Abs( lCompetingParticleMass - 1.32171 ) >=  fCutCompetingSpecies   &&
+            TMath::Abs( lCompetingParticleMass - 1.32171 ) >  fCutCompetingSpecies   &&
 
             //Causality Cut
-            TMath::Abs( lV0Radius - lCascRadius ) >=  fCutCausality   &&
+            TMath::Abs( lV0Radius - lCascRadius ) >  fCutCausality   &&
 
             //Nclusters cut
             lLeastNbrClusters >=  fCutLeastNumberOfClusters   &&
@@ -3255,7 +3255,7 @@ void AliCascadeModule::DoAnalysis(){
         if(fWhichParticle=="OmegaMinus") { lPosNSigmas = lNSigmasPosProton; lNegNSigmas = lNSigmasNegPion;   lBachNSigmas = lNSigmasBachKaon;  }
         if(fWhichParticle=="OmegaPlus")  { lPosNSigmas = lNSigmasPosPion;   lNegNSigmas = lNSigmasNegProton; lBachNSigmas = lNSigmasBachKaon;  }
 
-        lWeAreAtBin = fHistPt->FindBin( lPtMC ) - 1;
+        lWeAreAtBin = fHistPt->FindBin( lPt ) - 1;
         if(lWeAreAtBin == -1) lWeAreAtBin = 99; //UnderFlow, special treatment
 
         if(fSaveVarHistosSwitch) {
