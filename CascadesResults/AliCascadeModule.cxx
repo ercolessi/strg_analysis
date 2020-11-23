@@ -156,6 +156,7 @@ AliCascadeModule::AliCascadeModule()
     fCutNSigmasForSignalExtraction   = 4;
 
     fListOfPtDepCuts = new TList();
+    fHistCutDaughterEta                 = 0x0;
     fHistCutV0Radius                    = 0x0; 
     fHistCutCascRadius                  = 0x0; 
     fHistCutV0CosPA                     = 0x0; 
@@ -345,6 +346,7 @@ AliCascadeModule::AliCascadeModule(TString fParticleType)
     fCutNSigmasForSignalExtraction   = 4;
 
     fListOfPtDepCuts = new TList();
+    fHistCutDaughterEta                 = 0x0;
     fHistCutV0Radius                    = 0x0; 
     fHistCutCascRadius                  = 0x0; 
     fHistCutV0CosPA                     = 0x0; 
@@ -2893,58 +2895,58 @@ void AliCascadeModule::DoAnalysis(){
               (fWhichParticle == "OmegaMinus" && lCharge == -1) ||
               (fWhichParticle == "OmegaPlus"  && lCharge ==  1)
             ) &&
-            TMath::Abs(lNegEta)        <=  fCutDaughterEta         &&
-            TMath::Abs(lPosEta)       <=  fCutDaughterEta         &&
-            TMath::Abs(lBachEta)      <=  fCutDaughterEta         &&
+            TMath::Abs(lNegEta)       <  fCutDaughterEta         &&
+            TMath::Abs(lPosEta)       <  fCutDaughterEta         &&
+            TMath::Abs(lBachEta)      <  fCutDaughterEta         &&
             //Topological Selections
-            lV0Radius                 >=  fCutV0Radius            &&
-            lCascRadius               >=  fCutCascRadius          &&
-            TMath::Abs(lV0Mass-1.116) <=  fCutV0Mass              &&
-            lV0CosinePointingAngle    >=  fCutV0CosPA             &&
-            lCascCosinePointingAngle  >=  fCutCascCosPA           &&
-            lDcaNegToPrimVertex       >=  fCutDCANegToPV          &&
-            lDcaPosToPrimVertex       >=  fCutDCAPosToPV          &&
-            lDcaBachToPrimVertex      >=  fCutDCABachToPV         &&
-            lDcaV0Daughters           <=  fCutDCAV0Daughters      &&
-            lDcaCascDaughters         <=  fCutDCACascDaughters    &&
-            lDcaV0ToPV                >=  fCutDCAV0ToPV           &&
-            lDCACascToPV              <=  fCutDCACascToPV         &&
-            lDCAxyCascToPV            <=  fCutDCAxyCascToPV       &&
-            lDCAzCascToPV             <=  fCutDCAzCascToPV        &&
-            lParticleMass*lDistOverTotMom     <=  fCutProperLifetime      &&
-            lDCAzNegToPrimVertex      <=  fCutDCAzNegToPV         &&
-            lDCAzPosToPrimVertex      <=  fCutDCAzPosToPV         &&
-            lDCAzBachToPrimVertex     <=  fCutDCAzBachToPV        &&
-            lDCABachToBaryon          >=  fCutDCABachToBaryon     &&
-            lBBCosPA                  <=  fCutBBCosPA             &&
-            lMinTrackLength           >=  fCutMinTrackLength      &&
+            lV0Radius                 >  fCutV0Radius            &&
+            lCascRadius               >  fCutCascRadius          &&
+            TMath::Abs(lV0Mass-1.116) <  fCutV0Mass              &&
+            lV0CosinePointingAngle    >  fCutV0CosPA             &&
+            lCascCosinePointingAngle  >  fCutCascCosPA           &&
+            lDcaNegToPrimVertex       >  fCutDCANegToPV          &&
+            lDcaPosToPrimVertex       >  fCutDCAPosToPV          &&
+            lDcaBachToPrimVertex      >  fCutDCABachToPV         &&
+            lDcaV0Daughters           <  fCutDCAV0Daughters      &&
+            lDcaCascDaughters         <  fCutDCACascDaughters    &&
+            lDcaV0ToPV                >  fCutDCAV0ToPV           &&
+            lDCACascToPV              <  fCutDCACascToPV         &&
+            lDCAxyCascToPV            <  fCutDCAxyCascToPV       &&
+            lDCAzCascToPV             <  fCutDCAzCascToPV        &&
+            lParticleMass*lDistOverTotMom     <  fCutProperLifetime      &&
+            lDCAzNegToPrimVertex      <  fCutDCAzNegToPV         &&
+            lDCAzPosToPrimVertex      <  fCutDCAzPosToPV         &&
+            lDCAzBachToPrimVertex     <  fCutDCAzBachToPV        &&
+            lDCABachToBaryon          >  fCutDCABachToBaryon     &&
+            lBBCosPA                  <  fCutBBCosPA             &&
+            lMinTrackLength           >  fCutMinTrackLength      &&
 
             //Competing Species Rejection (only for Omegas)
-            TMath::Abs( lCompetingParticleMass - 1.32171 ) >=  fCutCompetingSpecies   &&
+            TMath::Abs( lCompetingParticleMass - 1.32171 ) >  fCutCompetingSpecies   &&
 
             //Causality Cut
-            TMath::Abs( lV0Radius - lCascRadius ) >=  fCutCausality   &&
+            TMath::Abs( lV0Radius - lCascRadius ) >  fCutCausality   &&
 
             //Nclusters cut
             lLeastNbrClusters >=  fCutLeastNumberOfClusters   &&
 
             ( //official response code
               ( fWhichParticle == "XiMinus"
-                && TMath::Abs(lNSigmasNegPion)   <=  fCutTPCPIDNSigmas  
-                && TMath::Abs(lNSigmasPosProton) <=  fCutTPCPIDNSigmas  
-                && TMath::Abs(lNSigmasBachPion)  <=  fCutTPCPIDNSigmas  ) ||
+                && TMath::Abs(lNSigmasNegPion)   <  fCutTPCPIDNSigmas  
+                && TMath::Abs(lNSigmasPosProton) <  fCutTPCPIDNSigmas  
+                && TMath::Abs(lNSigmasBachPion)  <  fCutTPCPIDNSigmas  ) ||
               ( fWhichParticle == "XiPlus"
-                && TMath::Abs(lNSigmasPosPion)   <=  fCutTPCPIDNSigmas  
-                && TMath::Abs(lNSigmasNegProton) <=  fCutTPCPIDNSigmas  
-                && TMath::Abs(lNSigmasBachPion)  <=  fCutTPCPIDNSigmas  ) ||
+                && TMath::Abs(lNSigmasPosPion)   <  fCutTPCPIDNSigmas  
+                && TMath::Abs(lNSigmasNegProton) <  fCutTPCPIDNSigmas  
+                && TMath::Abs(lNSigmasBachPion)  <  fCutTPCPIDNSigmas  ) ||
               ( fWhichParticle == "OmegaMinus"
-                && TMath::Abs(lNSigmasNegPion)   <=  fCutTPCPIDNSigmas  
-                && TMath::Abs(lNSigmasPosProton) <=  fCutTPCPIDNSigmas  
-                && TMath::Abs(lNSigmasBachKaon)  <=  fCutTPCPIDNSigmas  ) ||
+                && TMath::Abs(lNSigmasNegPion)   <  fCutTPCPIDNSigmas  
+                && TMath::Abs(lNSigmasPosProton) <  fCutTPCPIDNSigmas  
+                && TMath::Abs(lNSigmasBachKaon)  <  fCutTPCPIDNSigmas  ) ||
               ( fWhichParticle == "OmegaPlus"
-                && TMath::Abs(lNSigmasPosPion)   <=  fCutTPCPIDNSigmas  
-                && TMath::Abs(lNSigmasNegProton) <=  fCutTPCPIDNSigmas  
-                && TMath::Abs(lNSigmasBachKaon)  <=  fCutTPCPIDNSigmas  )
+                && TMath::Abs(lNSigmasPosPion)   <  fCutTPCPIDNSigmas  
+                && TMath::Abs(lNSigmasNegProton) <  fCutTPCPIDNSigmas  
+                && TMath::Abs(lNSigmasBachKaon)  <  fCutTPCPIDNSigmas  )
             ) &&
             ( (ITSrefitAllPtOneLeg || TOFmatchAllPtOneLeg) )
                       ) { // Start Entry Loop
@@ -3341,11 +3343,6 @@ void AliCascadeModule::DoAnalysis(){
 
         // NOTE: pT_reco (and rap_reco) used for efficiency computation -- see details
         //       in Fiorella's presentation here: https://indico.cern.ch/event/675315
-
-        //CMS Shift: apply before!
-        if(fRapidityType == "CMS") lRap   = lRap   + fRapidityShift;
-        if(fRapidityType == "CMS") lRapMC = lRapMC + fRapidityShift;
-
         //Compute 3D DCA Cascade to PV
         lDCACascToPV = TMath::Sqrt( lDCAxyCascToPV*lDCAxyCascToPV + lDCAzCascToPV*lDCAzCascToPV );
 
@@ -3594,7 +3591,7 @@ void AliCascadeModule::DoAnalysis(){
             TOFmatchAllPtOneLeg = kTRUE;
 
         //Now check validity
-        if( lRap<fRapidityBoundaryUpper && lRap>fRapidityBoundaryLower &&
+        if( lRapMC<fRapidityBoundaryUpper && lRapMC>fRapidityBoundaryLower &&
             (//charge condition (x-check)
               (fWhichParticle == "XiMinus"    && lCharge == -1) ||
               (fWhichParticle == "XiPlus"     && lCharge ==  1) ||
@@ -3886,7 +3883,7 @@ void AliCascadeModule::DoAnalysis(){
 
             //____________________________________________________________________________________
             //This is the MC template acquisition, if requested
-            if( lRap<fRapidityBoundaryUpper && lRap>fRapidityBoundaryLower &&
+            if( lRapMC<fRapidityBoundaryUpper && lRapMC>fRapidityBoundaryLower &&
                 ( (lMultiplicity>=fLoMultBound && lMultiplicity<=fHiMultBound) || fUseMinBiasMCBackgroundTemplate ) &&
                 ( //Perfect MC NON-association (for background estimates)
                   (fWhichParticle == "XiMinus"    && lPID!= 3312 ) ||
