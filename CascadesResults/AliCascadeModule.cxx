@@ -1060,7 +1060,7 @@ Double_t AliCascadeModule::GetEEfromZDC ( TFile* lfilename , Float_t lZPCpp, Flo
     
     TH1F * fhCumulative = (TH1F *)lfilename->Get(Form("%i/hCumulative_%i",lRun, lRun));
   
-	Double_t Sum = TMath::Log10(TMath::Abs(lZPCpp+lZNCpp+lZPApp+lZNApp));
+	Double_t Sum = TMath::Log10(TMath::Abs(lZPCpp+lZNCpp+lZPApp+lZNApp)+1);
 	Double_t fZDCCentrality;
 
     if (Sum!=0) {
