@@ -2524,7 +2524,7 @@ void AliCascadeModule::DoAnalysis(){
             fgausPt[ibin]->SetParameter(0,lHistoMBCasc[ibin]->GetMaximum() * 0.9);
             fgausPt[ibin]->SetParameter(3,0);
             fgausPt[ibin]->SetParameter(4,lHistoMBCasc[ibin]->GetMaximum() * 0.1);
-            lHistoMBCasc[ibin]->Fit(fgausname,"R");
+            lHistoMBCasc[ibin]->Fit(fgausname,"QREM0");
             lPeakPosition[ibin] = fgausPt[ibin]->GetParameter(1);
             lPeakWidth[ibin] = TMath::Abs( fgausPt[ibin]->GetParameter(2) );
             cout<<"---> ["<<fptbinlimits[ibin]<<" - "<<fptbinlimits[ibin+1]<<" GeV/c]\tPeak at: "<<lPeakPosition[ibin]<<", sigma = "<<lPeakWidth[ibin]<<endl;
