@@ -84,7 +84,7 @@ void ConvertZDCtoEE( const char* filename = "Files/MC15g3c3.root", const char* p
         cout<<"\nAnalizing event = "<<i+1<<" / "<< T->GetEntries() << endl;
       
         EZDC = ZPCpp + ZNCpp + ZPApp + ZNApp;
-        if (EZDC != 0) LogE = TMath::Log10(TMath::Abs(EZDC));
+        if (EZDC != 0) LogE = TMath::Log10(TMath::Abs(EZDC)+1);
         else LogE = 0;
         if (j==runList.size()) hESumZDC[j]->Fill(LogE);
         else {
