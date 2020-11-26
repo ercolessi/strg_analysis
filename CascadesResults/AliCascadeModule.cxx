@@ -1212,7 +1212,7 @@ void AliCascadeModule::SetDefaultCuts(){
     }
 
     SetCutTPCPIDNSigmas                           (    4);
-    SetCutSigmaForSignalExtraction                (    6);
+    SetCutSigmaForSignalExtraction                (    4);
     SetCutLeastNumberOfClusters                   (   70);
     SetCutMinTrackLength                          (  -1.);
     SetCutMaxChi2PerCluster                       ( 1.e9);
