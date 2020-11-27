@@ -1066,7 +1066,7 @@ Double_t AliCascadeModule::GetEEfromZDC ( TFile* lfilename , Float_t lZPCpp, Flo
     if (Sum!=0) {
     	fZDCCentrality = 100*(fhCumulative->Interpolate(Sum));
     }
-    else fZDCCentrality=-1;	
+    else fZDCCentrality = 0;	
 
     return fZDCCentrality;
 }
