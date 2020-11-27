@@ -2215,10 +2215,12 @@ void AliCascadeModule::DoAnalysis(){
     Float_t fCentrality = 0.;
     Bool_t  fMVPileupFlag = 0;
     Int_t   fClosestNonEmptyBC = 0;
+    Int_t   fRun = 0;
 
     lTreeEvent->SetBranchAddress("fCentrality", &fCentrality);
     lTreeEvent->SetBranchAddress("fMVPileupFlag", &fMVPileupFlag);
     lTreeEvent->SetBranchAddress("fClosestNonEmptyBC", &fClosestNonEmptyBC);
+    lTreeEvent->SetBranchAddress("fRun", &fRun);
 
     TH1F* fHistV0MultiplicityForTrigEvt;
     TH1F* fHistV0MultiplicityForSelEvtNoTPCOnly;
@@ -2234,6 +2236,8 @@ void AliCascadeModule::DoAnalysis(){
         //if( fMVPileupSwitch && !fMVPileupFlag ) continue;
         // check distance to closest non empty BC
         //if( TMath::Abs( fClosestNonEmptyBC ) < fMinDistToClosestNonEmptyBC ) continue; 
+
+        if ( fRun == 226476 || fRun == 226170 || fRun == 225768 || fRun == 225766 || fRun == 225763 || fRun == 225762 || fRun == 225757 || fRun == 225753 ) continue;
 
         if( fPerformMultiplicityStudy == kTRUE &&  //inside mult bin
             fCentrality>fLoMultBound &&
@@ -2366,6 +2370,7 @@ void AliCascadeModule::DoAnalysis(){
     lTree->SetBranchAddress("fTreeCascVarBachTOFSignal", &lBachTOFSignal);
     //--- Multiplicity Variable ----------------------------------------
     lTree->SetBranchAddress("fTreeCascVarCentrality",&fCentrality);
+    lTree->SetBranchAddress("fTreeCascVarRun", &fRun);
     //--- MV pileup flag -----------------------------------------------
     lTree->SetBranchAddress("fTreeCascVarMVPileupFlag", &fMVPileupFlag);
     lTree->SetBranchAddress("fTreeCascVarClosestNonEmptyBC", &fClosestNonEmptyBC);
@@ -2413,6 +2418,8 @@ void AliCascadeModule::DoAnalysis(){
             //Multiplicity Switch -- use integrated sample for peak finding
             lMultiplicity = (Double_t)fCentrality;
             if( fPerformMultiplicityStudy && (lMultiplicity<0. || lMultiplicity>100.) ) continue;
+
+            if ( fRun == 226476 || fRun == 226170 || fRun == 225768 || fRun == 225766 || fRun == 225763 || fRun == 225762 || fRun == 225757 || fRun == 225753 ) continue;
 
             if( icand % lOneTenthOfNCandidates == 0 )
                 cout<<" Currently at candidate........: "<<icand<<" / "<<lNCandidates<<" ( "<<(long)(((double)(icand)/(double)(lNCandidates))*(100.+1e-3))<<"% )"<<endl;
@@ -2664,6 +2671,8 @@ void AliCascadeModule::DoAnalysis(){
 
         // check distance to closest non empty BC
         //if( TMath::Abs( fClosestNonEmptyBC ) < fMinDistToClosestNonEmptyBC ) continue; 
+
+        if ( fRun == 226476 || fRun == 226170 || fRun == 225768 || fRun == 225766 || fRun == 225763 || fRun == 225762 || fRun == 225757 || fRun == 225753 ) continue;
 
         //Multiplicity Switch
         lMultiplicity = (Double_t)fCentrality;
