@@ -7,17 +7,17 @@ void runCascadeAnalysis(
   Double_t lMultBoundHi = 100.0,
   Double_t lEEBoundLo = 0.0,
   Double_t lEEBoundHi = 100.0,
-  TString lCascType = "XiMinus",
+  TString lCascType = "OmegaMinus",
   TString lWhichEstimator = "V0M",
-  Bool_t lDoSystematics = kTRUE,
+  Bool_t lDoSystematics = kFALSE,
   Bool_t  lSweepFlag = kFALSE){
 
   TString lWhichSystVar = "";
   TString lWhichMult = Form("%05.0lfto%05.0lf", 100.*lMultBoundLo, 100.*lMultBoundHi); 
 
   //Set data files
-  TString lMCFilename = "Files/MC15g3b1.root" ; //0x0
-  TString lDataFilename  = "Files/LHC15f_pass2.root" ;//0x0;
+  TString lMCFilename = "/alistorage/effectiveenergy/FilesTreni_INELgtZERO/MC15g3b2.root" ; //0x0
+  TString lDataFilename  = "/alistorage/effectiveenergy/FilesTreni_INELgtZERO/LHC15f_pass2.root" ;//0x0;
   TString lZDCtoEEFilename  = "ExtractedZDCPercentile_15f.root" ;//0x0;
   
   // Load common libraries
@@ -46,34 +46,18 @@ void runCascadeAnalysis(
   cout<<endl;
   cout<<"----------------------------------------------------"<<endl;
   cout<<" ---> Compiling needed class, please wait... "<<endl;
-  //Compile Macro
-  Int_t workedornot = gSystem->CompileMacro("AliCascadeModule.cxx","-kfo");
-  cout<<"----------------------------------------------------"<<endl;
-  cout<<endl;
-  if( workedornot == 0 ){ 
-      cout<<"*************************************"<<endl;
-      cout<<" AliCascadeModule.cxx compilation failed! "<<endl;
-      cout<<"*************************************"<<endl;
-      return;
-  }
-
+ 
   //Load Class
   gSystem->Load("AliCascadeModule_cxx.so");
 
   //Initialize Analysis Object
   AliCascadeModule *casc = new AliCascadeModule(lCascType);
 
-  Double_t ptbinlimits[] = {0.6, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 2.5, 2.9, 3.4, 4.0, 5.0, 6.5};//, 8.0, 10.0 };
+  //Omega
+  Double_t ptbinlimits[]   = {0.90, 1.60, 2.20, 2.60, 3.00, 3.80, 5.50, 8.00, 12.0 }; 
+  //Xi
+  //Double_t ptbinlimits[] = {0.6, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 2.5, 2.9, 3.4, 4.0, 5.0, 6.5};//, 8.0, 10.0 };
   Long_t ptbinnumb = sizeof(ptbinlimits)/sizeof(Double_t) - 1;
-  
-  //Remember how pT bins are defined for Xis and Omegas and choose 
-  /*if(lCascType == "XiMinus" || lCascType == "XiPlus"){ 
-    Double_t ptbinlimits[] = {0.0, 0.6, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 2.5, 2.9, 3.4, 4.0, 5.0, 6.5, 8.0, 10.0 };  
-  }
-
-  if(lCascType == "OmegaMinus" || lCascType == "OmegaPlus"){
-    Double_t ptbinlimits[]   = {0.90, 1.20, 1.60, 1.90, 2.20, 2.60, 3.00, 3.80, 5.50, 8.00, 12.0 };  
-  }*/
   
   //Set Pt Bins Used in Analysis
   casc->SetPtBinLimits( ptbinnumb, ptbinlimits );

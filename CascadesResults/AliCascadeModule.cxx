@@ -2250,7 +2250,7 @@ void AliCascadeModule::DoAnalysis(){
     TList* clist      = (TList*)file->Get("PWGLF_StrVsMult/cList");
     TTree* lTreeEvent = (TTree*)file->Get("PWGLF_StrVsMult/fTreeEvent");
     TTree* lTree      = (TTree*)file->Get("PWGLF_StrVsMult/fTreeCascade");
-  
+
     Double_t lLoMultBound =   0.;
     Double_t lHiMultBound =   0.;
     fPerformEEStudy = fPerformMultiplicityStudy; //For now you do both compulsory
@@ -2284,7 +2284,7 @@ void AliCascadeModule::DoAnalysis(){
     lTreeEvent->SetBranchAddress("fRun", &fRun);
     lTreeEvent->SetBranchAddress("fMVPileupFlag", &fMVPileupFlag);
     lTreeEvent->SetBranchAddress("fClosestNonEmptyBC", &fClosestNonEmptyBC);
-    
+
     TH1F* fHistV0MultiplicityForTrigEvt;
     TH1F* fHistV0MultiplicityForSelEvtNoTPCOnly;
     TH1F* fHistV0MultiplicityForSelEvtNoTPCOnlyNoPileup;
@@ -2308,7 +2308,7 @@ void AliCascadeModule::DoAnalysis(){
 
  		//Count events
         if( fPerformMultiplicityStudy == kTRUE &&  //inside mult bin
-           	fCentrality>fLoMultBound &&
+            fCentrality>fLoMultBound &&
             fCentrality<fHiMultBound &&
             fPerformEEStudy == kTRUE &&
             fZDCCentrality>fLoEEBound &&
@@ -2497,7 +2497,7 @@ void AliCascadeModule::DoAnalysis(){
             //Multiplicity Switch -- use integrated sample for peak finding
             lMultiplicity = (Double_t)fCentrality;
             //Get ZDCPercentile
-        	lCascZDCPercentile = GetEEfromZDC(Read, fZPCpp, fZNCpp, fZPApp, fZNApp, fRun); 
+            lCascZDCPercentile = GetEEfromZDC(Read, fZPCpp, fZNCpp, fZPApp, fZNApp, fRun); 
  		
             if( fPerformMultiplicityStudy && fPerformEEStudy && (lMultiplicity<0. || lMultiplicity>100.) ) continue; //QUI ho lasciato che comandasse solo la molteplicità to be checked
 
@@ -3208,13 +3208,13 @@ void AliCascadeModule::DoAnalysis(){
         if( iEv % ( lTreeEventMC->GetEntries() / 10 ) == 0 ) cout<<" At Event "<<iEv<<" out of "<<lTreeEventMC->GetEntries()<<endl;
         // check MV Pileup rejection
         //if( fMVPileupSwitch && !fMVPileupFlag ) continue;
-        //check INEL>0
+
         if(fEvSel_AllSelections==0) continue;
 
        	//Count events
         if( fPerformMultiplicityStudy == kTRUE &&  //inside mult bin
-           	fCentrality>lLoMultBoundMC &&
-            fCentrality<lHiMultBoundMC 
+            fCentrality>lLoMultBoundMC &&
+            fCentrality<lHiMultBoundMC
           ) lNEventsMC++;
     }
     cout<<" Number of events (MC), this multiplicity....: "<<lNEventsMC <<endl;
@@ -3330,12 +3330,10 @@ void AliCascadeModule::DoAnalysis(){
         // check MV Pileup rejection
         //if( fMVPileupSwitch && !fMVPileupFlag ) continue;
 
-        //check INEL>0
         if(fEvSel_AllSelections==0) continue;
 
         //Multiplicity Switch
         lMultiplicity = (Double_t)fCentrality;
-        
         if( fPerformMultiplicityStudy && (lMultiplicity<lLoMultBoundMC || lMultiplicity>lHiMultBoundMC) ) continue;
 
         if( icand % lOneTenthOfNCandidatesMC == 0 )

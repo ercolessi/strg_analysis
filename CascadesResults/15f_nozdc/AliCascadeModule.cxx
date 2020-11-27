@@ -642,7 +642,7 @@ void AliCascadeModule::SetCutBBCosPA(Double_t cut){
 
 // pT-dep Topological Selection Setters ///////////////////////////////////////
 //1
-/*
+
 void AliCascadeModule::SetCutV0Radius(TH1F* hCut){
     //Set minimum decay radius for the V0 in centimeters.
     //Note: this is (R_{2D}, cylindrical, centered around ALICE detector)
@@ -789,7 +789,7 @@ void AliCascadeModule::SetCutBBCosPA(TH1F* hCut){
     fHistCutBBCosPA = hCut;
     fListOfPtDepCuts->Add(fHistCutBBCosPA);
     cout<<"[AliCascadeModule] Received pt-dep Bachelor-Baryon Cosine of Pointing Angle (max value)"<<endl;
-}*/
+}
 ///////////////////////////////////////////////////////////////////////////////
 
 // Other Selection Setters ////////////////////////////////////////////////////
@@ -1728,9 +1728,7 @@ Double_t AliCascadeModule::MyGeant3FlukaCorrectionForAntiProtons(const Double_t 
     // On peut jouer sur la puissance n du terme "1/x^n" pour repousser le pt auquel la fonction prend la valeur 1.0
     // Ici, pour n = 0.2, la fonction prend la valeur 0.9990 en pt = 10 GeV/c
 
-    return (par[0] + par[1]*TMath::Exp(-par[2]/x[0])/x[0])+TMath::Log(x[0])+x[0]*par[3];
-
-    //return 1 - par[0]*TMath::Exp(par[1]*x[0]) + par[2] + par[3]*1/TMath::Power(x[0], 0.2)*TMath::Log(x[0]);
+    return 1 - par[0]*TMath::Exp(par[1]*x[0]) + par[2] + par[3]*1/TMath::Power(x[0], 0.2)*TMath::Log(x[0]);
 }
 
 Double_t AliCascadeModule::MyLevyPtXi(const Double_t *pt, const Double_t *par)
@@ -2217,10 +2215,12 @@ void AliCascadeModule::DoAnalysis(){
     Float_t fCentrality = 0.;
     Bool_t  fMVPileupFlag = 0;
     Int_t   fClosestNonEmptyBC = 0;
+    Int_t   fRun = 0;
 
     lTreeEvent->SetBranchAddress("fCentrality", &fCentrality);
     lTreeEvent->SetBranchAddress("fMVPileupFlag", &fMVPileupFlag);
     lTreeEvent->SetBranchAddress("fClosestNonEmptyBC", &fClosestNonEmptyBC);
+    lTreeEvent->SetBranchAddress("fRun", &fRun);
 
     TH1F* fHistV0MultiplicityForTrigEvt;
     TH1F* fHistV0MultiplicityForSelEvtNoTPCOnly;
@@ -2236,7 +2236,9 @@ void AliCascadeModule::DoAnalysis(){
         //if( fMVPileupSwitch && !fMVPileupFlag ) continue;
         // check distance to closest non empty BC
         //if( TMath::Abs( fClosestNonEmptyBC ) < fMinDistToClosestNonEmptyBC ) continue; 
-        //Multiplicity Switch
+
+        if ( fRun == 226476 || fRun == 226170 || fRun == 225768 || fRun == 225766 || fRun == 225763 || fRun == 225762 || fRun == 225757 || fRun == 225753 ) continue;
+
         if( fPerformMultiplicityStudy == kTRUE &&  //inside mult bin
             fCentrality>fLoMultBound &&
             fCentrality<fHiMultBound
@@ -2368,6 +2370,7 @@ void AliCascadeModule::DoAnalysis(){
     lTree->SetBranchAddress("fTreeCascVarBachTOFSignal", &lBachTOFSignal);
     //--- Multiplicity Variable ----------------------------------------
     lTree->SetBranchAddress("fTreeCascVarCentrality",&fCentrality);
+    lTree->SetBranchAddress("fTreeCascVarRun", &fRun);
     //--- MV pileup flag -----------------------------------------------
     lTree->SetBranchAddress("fTreeCascVarMVPileupFlag", &fMVPileupFlag);
     lTree->SetBranchAddress("fTreeCascVarClosestNonEmptyBC", &fClosestNonEmptyBC);
@@ -2416,6 +2419,8 @@ void AliCascadeModule::DoAnalysis(){
             lMultiplicity = (Double_t)fCentrality;
             if( fPerformMultiplicityStudy && (lMultiplicity<0. || lMultiplicity>100.) ) continue;
 
+            if ( fRun == 226476 || fRun == 226170 || fRun == 225768 || fRun == 225766 || fRun == 225763 || fRun == 225762 || fRun == 225757 || fRun == 225753 ) continue;
+
             if( icand % lOneTenthOfNCandidates == 0 )
                 cout<<" Currently at candidate........: "<<icand<<" / "<<lNCandidates<<" ( "<<(long)(((double)(icand)/(double)(lNCandidates))*(100.+1e-3))<<"% )"<<endl;
 
@@ -2428,7 +2433,7 @@ void AliCascadeModule::DoAnalysis(){
                 ITSrefitAllPtOneLeg = kTRUE;
             if ((TMath::Abs(lPosTOFExpTDiff+2500.)>1e-6) || (TMath::Abs(lNegTOFExpTDiff+2500.)>1e-6) || (TMath::Abs(lBachTOFExpTDiff+2500.)>1e-6))
                 TOFmatchAllPtOneLeg = kTRUE;
-           
+
             //Now check validity
             if( lRap<fRapidityBoundaryUpper && lRap>fRapidityBoundaryLower &&
                 (//charge condition (x-check)
@@ -2667,6 +2672,8 @@ void AliCascadeModule::DoAnalysis(){
         // check distance to closest non empty BC
         //if( TMath::Abs( fClosestNonEmptyBC ) < fMinDistToClosestNonEmptyBC ) continue; 
 
+        if ( fRun == 226476 || fRun == 226170 || fRun == 225768 || fRun == 225766 || fRun == 225763 || fRun == 225762 || fRun == 225757 || fRun == 225753 ) continue;
+
         //Multiplicity Switch
         lMultiplicity = (Double_t)fCentrality;
         if( fPerformMultiplicityStudy && (lMultiplicity<lLoMultBound || lMultiplicity>lHiMultBound) ) continue;
@@ -2681,9 +2688,9 @@ void AliCascadeModule::DoAnalysis(){
         Bool_t TOFmatchAllPtOneLeg = kFALSE;
         if ((lPosTrackStatus & kITSrefit) || (lNegTrackStatus & kITSrefit) || (lBachTrackStatus & kITSrefit))
             ITSrefitAllPtOneLeg = kTRUE;
-         if ((TMath::Abs(lPosTOFExpTDiff+2500.)>1e-6) || (TMath::Abs(lNegTOFExpTDiff+2500.)>1e-6) || (TMath::Abs(lBachTOFExpTDiff+2500.)>1e-6))
+        if ((TMath::Abs(lPosTOFExpTDiff+2500.)>1e-6) || (TMath::Abs(lNegTOFExpTDiff+2500.)>1e-6) || (TMath::Abs(lBachTOFExpTDiff+2500.)>1e-6))
             TOFmatchAllPtOneLeg = kTRUE;
-        
+
         //--- TPC dE/dx QA
         Float_t lPosP  = TMath::Sqrt( lPosPx*lPosPx + lPosPy*lPosPy + lPosPz*lPosPz );
         Float_t lNegP  = TMath::Sqrt( lNegPx*lNegPx + lNegPy*lNegPy + lNegPz*lNegPz );
@@ -3100,7 +3107,7 @@ void AliCascadeModule::DoAnalysis(){
     }
 
     Bool_t fEvSel_AllSelections = 0;
- 
+
     lTreeEventMC->SetBranchAddress("fCentrality",   &fCentrality);
     lTreeEventMC->SetBranchAddress("fMVPileupFlag", &fMVPileupFlag);
     lTreeEventMC->SetBranchAddress("fEvSel_AllSelections", &fEvSel_AllSelections);
@@ -3113,7 +3120,6 @@ void AliCascadeModule::DoAnalysis(){
         if( iEv % ( lTreeEventMC->GetEntries() / 10 ) == 0 ) cout<<" At Event "<<iEv<<" out of "<<lTreeEventMC->GetEntries()<<endl;
         // check MV Pileup rejection
         //if( fMVPileupSwitch && !fMVPileupFlag ) continue;
-        // Multiplicity Switch
 
         if(fEvSel_AllSelections==0) continue;
 
@@ -3227,7 +3233,7 @@ void AliCascadeModule::DoAnalysis(){
 
         // check MV Pileup rejection
         //if( fMVPileupSwitch && !fMVPileupFlag ) continue;
-        
+
         if(fEvSel_AllSelections==0) continue;
 
         //Multiplicity Switch
@@ -3239,7 +3245,6 @@ void AliCascadeModule::DoAnalysis(){
 
         // NOTE: pT_reco (and rap_reco) used for efficiency computation -- see details
         //       in Fiorella's presentation here: https://indico.cern.ch/event/675315
-
         //Compute 3D DCA Cascade to PV
         lDCACascToPV = TMath::Sqrt( lDCAxyCascToPV*lDCAxyCascToPV + lDCAzCascToPV*lDCAzCascToPV );
 
@@ -3780,7 +3785,7 @@ void AliCascadeModule::DoAnalysis(){
 
             //____________________________________________________________________________________
             //This is the MC template acquisition, if requested
-            if( lRap<fRapidityBoundaryUpper && lRap>fRapidityBoundaryLower &&
+            if( lRapMC<fRapidityBoundaryUpper && lRapMC>fRapidityBoundaryLower &&
                 ( (lMultiplicity>=fLoMultBound && lMultiplicity<=fHiMultBound) || fUseMinBiasMCBackgroundTemplate ) &&
                 ( //Perfect MC NON-association (for background estimates)
                   (fWhichParticle == "XiMinus"    && lPID!= 3312 ) ||
@@ -4101,35 +4106,15 @@ void AliCascadeModule::DoAnalysis(){
     cout<<endl;
 
     //do Geant-Fluka correction
-    TF1 *fitGeant3FlukaCorr = 0x0;
-    TH1D* h1CorrectionFactor = (TH1D*)fHistPureEfficiency->Clone("h1CorrectionFactor");
-    h1CorrectionFactor->Reset();
-    
-    if( fWhichParticle.Contains("Plus") ) {
-        cout<<"--------------- Geant3/Fluka Correction ----------------"<<endl;
-
-        //Credit for the original version of this code: Antonin Maire (thanks!)
-
-        TFile *fileCorrGeanT3FlukaPanos = new TFile( "antiPrCorrFunc.root", "READ");
-        fitGeant3FlukaCorr = (TF1*) fileCorrGeanT3FlukaPanos->Get("funcCorrAntiProtonGEANT4");
-
-        Printf("Test fit function...");
-        Printf(" - fitGeant3FlukaCorr for pt =  .25 GeV/c : %f", fitGeant3FlukaCorr->Eval( .25) );
-        Printf(" - fitGeant3FlukaCorr for pt =  .5  GeV/c : %f", fitGeant3FlukaCorr->Eval( .5) );
-        Printf(" - fitGeant3FlukaCorr for pt =  1   GeV/c : %f", fitGeant3FlukaCorr->Eval( 1.0) );
-        Printf(" - fitGeant3FlukaCorr for pt =  2   GeV/c : %f", fitGeant3FlukaCorr->Eval( 2.0) );
-        Printf(" - fitGeant3FlukaCorr for pt =  5   GeV/c : %f", fitGeant3FlukaCorr->Eval( 5.0) );
-        Printf(" - fitGeant3FlukaCorr for pt =  7   GeV/c : %f", fitGeant3FlukaCorr->Eval( 7.0) );
-        Printf(" - fitGeant3FlukaCorr for pt =  8   GeV/c : %f", fitGeant3FlukaCorr->Eval( 8.0) );
-        Printf(" - fitGeant3FlukaCorr for pt = 10   GeV/c : %f", fitGeant3FlukaCorr->Eval(10.0) );
-        cout<<"--------------- Embedding G3/F in Efficiencies ---------"<<endl;
-                
-	for(Int_t ipoint = 0; ipoint<fptbinnumb; ipoint++) {
-	    h1CorrectionFactor->SetBinContent(ipoint+1, fitGeant3FlukaCorr->Eval( lProtonMomentum[ipoint]->GetMean()));
-            lEfficiency[ipoint]         *= fitGeant3FlukaCorr->Eval( lProtonMomentum[ipoint]->GetMean() ) ;
-            lEfficiencyError[ipoint]    *= fitGeant3FlukaCorr->Eval( lProtonMomentum[ipoint]->GetMean() ) ;
+    if( fFuncGeantFlukaCorr ) {
+        cout<<"--------------- Geant-Fluka Correction ----------------"<<endl;
+        cout<<"Correction received: "<<fFuncGeantFlukaCorr->GetName()<<endl;
+        cout<<"Embedding Geant-Fluka in Efficiencies"<<endl;
+        for(Int_t ipoint = 0; ipoint<fptbinnumb; ipoint++) {
+            printf("---> Xi pT bin: [%lf - %lf]\tProton pT: %.4lf GeV/c\n", fptbinlimits[ipoint], fptbinlimits[ipoint+1], lProtonMomentum[ipoint]->GetMean());
+            lEfficiency[ipoint]      *= fFuncGeantFlukaCorr->Eval( lProtonMomentum[ipoint]->GetMean() ) ;
+            lEfficiencyError[ipoint] *= fFuncGeantFlukaCorr->Eval( lProtonMomentum[ipoint]->GetMean() ) ;
         }
-
         cout<<"Geant-Fluka Corrected Efficiencies:"<<endl;
         for(Int_t ipoint = 0; ipoint<fptbinnumb; ipoint++) {
             cout<<"---> ["<<fptbinlimits[ipoint]<<" - "<<fptbinlimits[ipoint+1]<<" GeV/c]\tEff.: "<<lEfficiency[ipoint]<<" +/- "<<lEfficiencyError[ipoint]<<endl;
@@ -4288,12 +4273,12 @@ void AliCascadeModule::DoAnalysis(){
     }
 
     //Saving Geant-Fluka Correction Data (MC)
-    if( fitGeant3FlukaCorr ) {
+    if( fFuncGeantFlukaCorr ) {
         lResultsFile->cd();
         TDirectoryFile *lGFCorrection = new TDirectoryFile("lGFCorrection","Geant-Fluka Correction Histograms");
         lGFCorrection->cd();
-	h1CorrectionFactor->Write();
-        fitGeant3FlukaCorr->Write();
+
+        fFuncGeantFlukaCorr->Write();
         for(Int_t ibin = 0; ibin<fptbinnumb; ibin++) {
             lProtonMomentum[ibin]->Write();
         }
@@ -4358,8 +4343,6 @@ void AliCascadeModule::DoAnalysis(){
 
     fHistPureEfficiency->Write();
     fHistEfficiency->Write();
-    fHistEffNumerator->Write();
-    fHistEffDenominator->Write();	
 
     if(fWhichParticle == "XiMinus"   ) fHistPtXiMinus     ->  Write();
     if(fWhichParticle == "XiPlus"    ) fHistPtXiPlus      ->  Write();

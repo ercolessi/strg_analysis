@@ -16,7 +16,7 @@ void runCascadeAnalysis(
   TString lWhichMult = Form("%05.0lfto%05.0lf", 100.*lMultBoundLo, 100.*lMultBoundHi); 
 
   //Set data files
-  TString lMCFilename = "/alistorage/effectiveenergy/FilesTreni_INELgtZERO/MC15g3b1.root" ; //0x0
+  TString lMCFilename = "/alistorage/effectiveenergy/FilesTreni_INELgtZERO/MC15g3b2.root" ; //0x0
   TString lDataFilename  = "/alistorage/effectiveenergy/FilesTreni_INELgtZERO/LHC15f_pass2.root" ;//0x0;
   TString lZDCtoEEFilename  = "ExtractedZDCPercentile_15f.root" ;//0x0;
   
