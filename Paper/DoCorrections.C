@@ -51,6 +51,10 @@ void DoCorrections(
 	//Initialize Analysis Object
 	CorrectionClass *casc = new CorrectionClass(lCascType);
 
+	TString multestimator = "SPDClusters";
+	TString eeestimator = "V0M";
+	if (lWhichFixedEstimator.Contains("ZDC") || lWhichVarEstimator.Contains("ZDC") ) eeestimator = "ZDC";
+
 	casc->SetOutputDataFile("testcorrclass.root");
 	casc->SetMCFilepTshape("~/strg_analysis/CascadesResults/ANALISI/MC15g3b1_ZDCRuns.root");
 	casc->SetMCFileNormCorr( Form("Norm-%s-13TeV_%s_Fixed%sin%03.0f_%03.0f.root", 
@@ -61,6 +65,8 @@ void DoCorrections(
 	//===== pT ========
 	//=================
 	
+	//Lambda
+	//Double_t ptbinlimits[] = {0.4,  0.6, 0.8, 1., 1.2, 1.4, 1.6, 1.8, 2, 2.2, 2.5, 2.9, 3.4, 4, 5, 6.5, 8, 10};
 	//Omega
 	//Double_t ptbinlimits[]   = {0.90, 1.60, 2.20, 2.60, 3.00, 3.80, 5.50, 8.00, 12.0 }; 
 	//Xi

@@ -51,7 +51,7 @@ CorrectionClass::CorrectionClass()
 CorrectionClass::CorrectionClass(TString fParticleType)
 {
     // Allows definition of Particle Type in analysis.
-    // Possible Options are "Xi", "Omega".
+    // Possible Options are "Xi", "Omega", "Lambda".
     // If some other string is given, this constructor will
     // default to "Xi".
     fWhichParticle = fParticleType;
@@ -222,6 +222,8 @@ void CorrectionClass::PrintConfiguration() {
     //Print current analysis configuration
     Double_t lParticleMass = 1.32171; //Default
     if(fWhichParticle == "Omega") lParticleMass = 1.67245;
+    if(fWhichParticle == "Lambda") lParticleMass = 1.115683;
+
     //
     cout << "\n\n";
     cout<<"--------------- Configuration --------------------------"<<endl;
@@ -242,6 +244,8 @@ void CorrectionClass::DoAnalysis(){
 
     Double_t lParticleMass = 1.32171; //Default
     if(fWhichParticle == "Omega") lParticleMass = 1.67245;
+    if(fWhichParticle == "Lambda") lParticleMass = 1.115683;
+
 
     TString fParticle = "";
     TString fAntiParticle = "";
@@ -252,6 +256,10 @@ void CorrectionClass::DoAnalysis(){
     if (fWhichParticle.Contains("Omega")){
       fParticle = "OmegaMinus";
       fAntiParticle = "OmegaPlus";
+    }  
+    if (fWhichParticle.Contains("Lambda")){
+      fParticle = "Lambda";
+      fAntiParticle = "AntiLambda";
     }  
     //
     TString folder = "../FullStatistics/RawSpectra/18i";

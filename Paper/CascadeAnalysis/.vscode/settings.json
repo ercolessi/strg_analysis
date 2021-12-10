@@ -1,0 +1,13 @@
+{
+    "files.associations": {
+        "CorrectionAnalysis.C": "cpp",
+        "IterativeProcess.C": "cpp",
+        "runXiAnalysis.C": "cpp",
+        "compareESDAOD.C": "cpp",
+        "CorrectforNormEff.C": "cpp",
+        "ComputeEfficienciesFullXiFINAL.C": "cpp",
+        "ComputeNormEfficienciesnoZDCperc.C": "cpp",
+        "iostream": "cpp",
+        "DoCorrections.C": "cpp"
+    }
+}

@@ -1,6 +1,6 @@
 #include <iostream>
 #include <fstream>
-
+#include "AliCascadeModule.h"
 
 void runXiAnalysis(
   Double_t lMultBoundLo = 0.0,
@@ -17,13 +17,12 @@ void runXiAnalysis(
   TString lWhichMult = Form("%05.0lfto%05.0lf", 100.*lMultBoundLo, 100.*lMultBoundHi); 
 
   //Set data files
-  TString lDataFilename = "../AODAnalysis/grid/esdTree.root";
-  //"/home/fercoles/strg_analysis/FullStatistics/RootFiles/LHC18i.root" ; //0x0
-  TString lMCFilename  = "/home/fercoles/strg_analysis/FullStatistics/RootFiles/LHC20i2b_Inj18i.root" ;//0x0;
+  TString lDataFilename = "../data/LHC17j.root";
+  TString lMCFilename  = "../data/LHC20i2c_17j.root";
   TString lTOFpercFilename  = "0x0";  //"ExtractedTOFPercentile_18i_TOFinfo.root";
   
   // Load common libraries
-  gSystem->Load("libCore.so");
+  /*gSystem->Load("libCore.so");
   gSystem->Load("libTree.so");
   gSystem->Load("libGeom.so");
   gSystem->Load("libVMC.so");
@@ -38,7 +37,7 @@ void runXiAnalysis(
   gSystem->Load("libPWGLFSTRANGENESS");
   // Use AliRoot includes to compile our task
   gROOT->ProcessLine(".include $ALICE_ROOT/include");
-  gROOT->ProcessLine(".include $ALICE_PHYSICS/include");
+  gROOT->ProcessLine(".include $ALICE_PHYSICS/include");*/
 
   //Argument: System analysed - one of "XiMinus", "XiPlus", "OmegaMinus"
   cout<<"Macro to test Cascade analysis module"<<endl;
@@ -48,7 +47,10 @@ void runXiAnalysis(
   cout<<endl;
   cout<<"----------------------------------------------------"<<endl;
   cout<<" ---> Compiling needed class, please wait... "<<endl;
- 
+
+  //Compile Macro
+  //gSystem->CompileMacro("AliCascadeModule.cxx","-kfo");
+
   //Load Class
   gSystem->Load("AliCascadeModule_cxx.so");
 
@@ -62,7 +64,8 @@ void runXiAnalysis(
   //Omega
   //Double_t ptbinlimits[]   = {0.90, 1.60, 2.20, 2.60, 3.00, 3.80, 5.50, 8.00, 12.0 }; 
   //Xi
-  Double_t ptbinlimits[] = {0.6, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 2.5, 2.9, 3.4, 4.0, 5.0, 6.5};//, 8.0, 10.0 };
+  Double_t ptbinlimits[] = {0.6, 1.0, 1.5, 2.0, 2.9, 3.4, 6.5};
+  //{0.6, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 2.5, 2.9, 3.4, 4.0, 5.0, 6.5};//, 8.0, 10.0 };
   Long_t ptbinnumb = sizeof(ptbinlimits)/sizeof(Double_t) - 1;
   
   //Set Pt Bins 

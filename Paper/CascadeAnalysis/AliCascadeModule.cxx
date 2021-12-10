@@ -43,7 +43,7 @@
 using namespace std;
 
 //--- For ROOT ---
-#include "AliVTrack.h"
+//#include "AliVTrack.h"
 #include "AliCascadeModule.h"
 
 AliCascadeModule::AliCascadeModule()
@@ -1588,25 +1588,25 @@ Bool_t AliCascadeModule::CheckTOFmatchOne(Double_t pt, Double_t bachtdiff, Doubl
 Bool_t AliCascadeModule::CheckITSrefitBach(Double_t pt, ULong64_t trackstatus) {
     //Check ITS refit status for bachelor daughter
     if( !fUseITSrefitBach || (pt<fPtMinITSrefitBach) || (pt>fPtMaxITSrefitBach) ) return kTRUE; // don't care about ITS
-    if( trackstatus & AliVTrack::kITSrefit ) return kTRUE; 
+    if( trackstatus & 4 ) return kTRUE; 
     return kFALSE;
 }
 Bool_t AliCascadeModule::CheckITSrefitNeg(Double_t pt, ULong64_t trackstatus) {
     //Check ITS refit status for negative daughter
     if( !fUseITSrefitNeg || (pt<fPtMinITSrefitNeg) || (pt>fPtMaxITSrefitNeg) ) return kTRUE; // don't care about ITS
-    if( trackstatus & AliVTrack::kITSrefit ) return kTRUE; 
+    if( trackstatus & 4 ) return kTRUE; 
     return kFALSE;
 }
 Bool_t AliCascadeModule::CheckITSrefitPos(Double_t pt, ULong64_t trackstatus) {
     //Check ITS refit status for positive daughter
     if( !fUseITSrefitPos || (pt<fPtMinITSrefitPos) || (pt>fPtMaxITSrefitPos) ) return kTRUE; // don't care about ITS
-    if( trackstatus & AliVTrack::kITSrefit ) return kTRUE; 
+    if( trackstatus & 4 ) return kTRUE; 
     return kFALSE;
 }
 Bool_t AliCascadeModule::CheckITSrefitOne(Double_t pt, ULong64_t btrackstatus, ULong64_t ntrackstatus, ULong64_t ptrackstatus) {
     //Check ITS refit status for one of the daughters 
     if( !fUseITSrefitOne || (pt<fPtMinITSrefitOne) || (pt>fPtMaxITSrefitOne) ) return kTRUE; // don't care about ITS
-    if( (btrackstatus & AliVTrack::kITSrefit) | (ntrackstatus & AliVTrack::kITSrefit) | (ptrackstatus & AliVTrack::kITSrefit) ) return kTRUE; 
+    if( (btrackstatus & 4) | (ntrackstatus & 4) | (ptrackstatus & 4) ) return kTRUE; 
     return kFALSE;
 }
 
@@ -1617,7 +1617,7 @@ Bool_t AliCascadeModule::CheckITSTOFBach(Double_t pt, ULong64_t btrackstatus,
     if( !fUseITSTOFBach  || (pt<fPtMinITSTOFBach) || (pt>fPtMaxITSTOFBach) ) return kTRUE;
 
     Bool_t isITSrefitBach = kFALSE;
-    if( (btrackstatus & AliVTrack::kITSrefit) ) isITSrefitBach = kTRUE; 
+    if( (btrackstatus & 4) ) isITSrefitBach = kTRUE; 
 
     Bool_t isTOFmatchBach = kFALSE;
     Double_t bachmin = GetCutMinTOFBCIDBach( pt );
@@ -1633,7 +1633,7 @@ Bool_t AliCascadeModule::CheckITSTOFNeg(Double_t pt, ULong64_t ntrackstatus,
     if( !fUseITSTOFNeg  || (pt<fPtMinITSTOFNeg) || (pt>fPtMaxITSTOFNeg) ) return kTRUE;
 
     Bool_t isITSrefitNeg = kFALSE;
-    if( (ntrackstatus & AliVTrack::kITSrefit) ) isITSrefitNeg = kTRUE; 
+    if( (ntrackstatus & 4) ) isITSrefitNeg = kTRUE; 
 
     Bool_t isTOFmatchNeg = kFALSE;
     Double_t negmin = GetCutMinTOFBCIDNeg( pt );
@@ -1649,7 +1649,7 @@ Bool_t AliCascadeModule::CheckITSTOFPos(Double_t pt, ULong64_t ptrackstatus,
     if( !fUseITSTOFPos  || (pt<fPtMinITSTOFPos) || (pt>fPtMaxITSTOFPos) ) return kTRUE;
 
     Bool_t isITSrefitPos = kFALSE;
-    if( (ptrackstatus & AliVTrack::kITSrefit) ) isITSrefitPos = kTRUE; 
+    if( (ptrackstatus & 4) ) isITSrefitPos = kTRUE; 
 
     Bool_t isTOFmatchPos = kFALSE;
     Double_t posmin = GetCutMinTOFBCIDPos( pt );
@@ -1665,7 +1665,7 @@ Bool_t AliCascadeModule::CheckITSTOFOne(Double_t pt, ULong64_t btrackstatus, ULo
     if( !fUseITSTOFOne  || (pt<fPtMinITSTOFOne) || (pt>fPtMaxITSTOFOne) ) return kTRUE;
 
     Bool_t isITSrefitOne = kFALSE;
-    if( (btrackstatus & AliVTrack::kITSrefit) | (ntrackstatus & AliVTrack::kITSrefit) | (ptrackstatus & AliVTrack::kITSrefit) ) isITSrefitOne = kTRUE; 
+    if( (btrackstatus & 4) | (ntrackstatus & 4) | (ptrackstatus & 4) ) isITSrefitOne = kTRUE; 
 
     Bool_t isTOFmatchOne = kFALSE;
     Double_t bachmin = GetCutMinTOFBCIDBach( pt );
@@ -1683,7 +1683,7 @@ Bool_t AliCascadeModule::CheckITSTOFOne(Double_t pt, ULong64_t btrackstatus, ULo
 Bool_t AliCascadeModule::CheckITSTOF(ULong64_t lPosTrackStatus, ULong64_t lNegTrackStatus, ULong64_t lBachTrackStatus, Int_t lPosTOFBCID, Int_t lNegTOFBCID, Int_t lBachTOFBCID){
     
     Bool_t ITSrefitAllPtOneLeg = kFALSE; 
-    if ((lPosTrackStatus & AliVTrack::kITSrefit) || (lNegTrackStatus & AliVTrack::kITSrefit) || (lBachTrackStatus & AliVTrack::kITSrefit))
+    if ((lPosTrackStatus & 4) || (lNegTrackStatus & 4) || (lBachTrackStatus & 4))
         ITSrefitAllPtOneLeg = kTRUE;
     //
     Bool_t TOFmatchAllPtOneLeg = kFALSE;
@@ -1890,8 +1890,11 @@ void AliCascadeModule::DoAnalysis(){
 
     PrintConfiguration();
 
+
     //save current configuration
     TH1F* fHistConfig = new TH1F("fHistConfig","Analysis configuration", 50, 0, 50);
+
+
     //
     // General info
     fHistConfig->Fill( "ParticleMass"                       , lParticleMass);
@@ -1901,10 +1904,14 @@ void AliCascadeModule::DoAnalysis(){
     fHistConfig->Fill( lVarName[ NEGDAUGHTERETA     ].Data(), fCutDaughterEta);
     fHistConfig->Fill( lVarName[ POSDAUGHTERETA     ].Data(), fCutDaughterEta);
     fHistConfig->Fill( lVarName[ BACHDAUGHTERETA    ].Data(), fCutDaughterEta);
+
+
     //
     // Event selections
     fHistConfig->Fill( "MVPileupRejection"                  , fMVPileupSwitch);
     fHistConfig->Fill( "MinDistToClosestNonEmptyBC"         , fMinDistToClosestNonEmptyBC);
+
+
     //
     // Topological cuts
     fHistConfig->Fill( lVarName[ V0RADIUS           ].Data(), fCutV0Radius);
@@ -1927,6 +1934,7 @@ void AliCascadeModule::DoAnalysis(){
     fHistConfig->Fill( lVarName[ DCABACHTOBARYON    ].Data(), fCutDCABachToBaryon);
     fHistConfig->Fill( lVarName[ BBPA               ].Data(), TMath::ACos(fCutBBCosPA));
     //
+
     // Other cuts
     fHistConfig->Fill( lVarName[ PROPERLIFETIME     ].Data(), fCutProperLifetime);
     fHistConfig->Fill( lVarName[ TPCNEGPIDNSIGMAS   ].Data(), fCutTPCPIDNSigmas);
@@ -1952,6 +1960,8 @@ void AliCascadeModule::DoAnalysis(){
     fHistConfig->Fill( "MinBachTOFSignal"                   , fCutMinTOFSignalBach);
     fHistConfig->Fill( "MaxBachTOFSignal"                   , fCutMaxTOFSignalBach);
     fHistConfig->Fill( "SigmasForSignalExtraction"          , fCutNSigmasForSignalExtraction);
+
+
 
     // save number of events processed
     TH1F* fHistEventCounter = new TH1F("fHistEventCounter","Number of Events Analysed", 2, 0, 2);
@@ -2018,6 +2028,8 @@ void AliCascadeModule::DoAnalysis(){
     TH1F* lHistoSelectedCasc[100];
     TCanvas* lCanvasHistoSelectedCasc[100];
     //TH1F* lHistoSelectedCascMC[100]; //OPTIONAL
+
+
 
     TH1F *lHistResolution[100];
     TF1 *lHistResolutionGaussian[100];
@@ -2159,6 +2171,7 @@ void AliCascadeModule::DoAnalysis(){
     //================================================================
     cout<<endl;
 
+
     // save distributions for each variable in the ttree (signal/bkg) -- rafael
     Int_t lVarNbins[NVARS];                     Float_t lVarBinLo[NVARS];                     Float_t lVarBinHi[NVARS];
     lVarNbins[ V0RADIUS          ] =   400;     lVarBinLo[ V0RADIUS          ] =     0.0;     lVarBinHi[ V0RADIUS          ] =    40.0;
@@ -2291,6 +2304,7 @@ void AliCascadeModule::DoAnalysis(){
     //================================================================
     cout<<endl;
 
+
     cout<<"--------------- Open Real Data File --------------------"<<endl;
     TFile* file = TFile::Open(fRealDataFile, "READ");
     TList* clist      = (TList*)file->Get("PWGLF_StrVsMult/cList");
@@ -2326,11 +2340,11 @@ void AliCascadeModule::DoAnalysis(){
     if (fWhichMultEstimator.Contains("SPD") || fWhichMultEstimator.Contains("V0M")) 
         lTreeEvent->SetBranchAddress(Form("fCentrality_%s",fWhichMultEstimator.Data()), &fMultCentrality);
     lTreeEvent->SetBranchAddress(Form("fCentrality_%s",fWhichEffEnergyEstimator.Data()), &fEnergyCentrality);
-    lTreeEvent->SetBranchAddress("fZPApp", &fZPApp);
+    /*lTreeEvent->SetBranchAddress("fZPApp", &fZPApp);
     lTreeEvent->SetBranchAddress("fZPCpp", &fZPCpp);
     lTreeEvent->SetBranchAddress("fZNApp", &fZNApp);
     lTreeEvent->SetBranchAddress("fZNCpp", &fZNCpp);
-    lTreeEvent->SetBranchAddress("fNTOFtrgPads",&fTOFPads);
+    */lTreeEvent->SetBranchAddress("fNTOFtrgPads",&fTOFPads);
     lTreeEvent->SetBranchAddress("fRun", &fRun);
     lTreeEvent->SetBranchAddress("fMVPileupFlag", &fMVPileupFlag);
     lTreeEvent->SetBranchAddress("fClosestNonEmptyBC", &fClosestNonEmptyBC);
@@ -2485,20 +2499,20 @@ void AliCascadeModule::DoAnalysis(){
     //--- TOF info -----------------------------------------------------
     lTree->SetBranchAddress("fTreeCascVarNegTOFBCid",  &lNegTOFBCID);
     lTree->SetBranchAddress("fTreeCascVarPosTOFBCid",  &lPosTOFBCID);
-    lTree->SetBranchAddress("fTreeCascVarPosTOFBCid", &lBachTOFBCID);
+    lTree->SetBranchAddress("fTreeCascVarBachTOFBCid", &lBachTOFBCID);
     lTree->SetBranchAddress("fTreeCascVarNegTOFSignal",  &lNegTOFSignal);
     lTree->SetBranchAddress("fTreeCascVarPosTOFSignal",  &lPosTOFSignal);
     lTree->SetBranchAddress("fTreeCascVarBachTOFSignal", &lBachTOFSignal);
     lTree->SetBranchAddress("fTreeCascVarNTOFtrgPads", &fTOFPads);
     //--- Multiplicity Variable ----------------------------------------
-     if (fWhichMultEstimator.Contains("SPD") ) 
+    if (fWhichMultEstimator.Contains("SPD") ) 
         lTree->SetBranchAddress(Form("fTreeCascVarCentrality_%s",fWhichMultEstimator.Data()), &fMultCentrality);
     lTree->SetBranchAddress(Form("fTreeCascVarCentrality_%s",fWhichEffEnergyEstimator.Data()), &fEnergyCentrality);
-    lTree->SetBranchAddress("fTreeCascVarZPApp", &fZPApp);
+    /*lTree->SetBranchAddress("fTreeCascVarZPApp", &fZPApp);
     lTree->SetBranchAddress("fTreeCascVarZPCpp", &fZPCpp);
     lTree->SetBranchAddress("fTreeCascVarZNApp", &fZNApp);
     lTree->SetBranchAddress("fTreeCascVarZNCpp", &fZNCpp);
-    lTree->SetBranchAddress("fTreeCascVarRun", &fRun);
+    */lTree->SetBranchAddress("fTreeCascVarRun", &fRun);
     //--- MV pileup flag -----------------------------------------------
     lTree->SetBranchAddress("fTreeCascVarMVPileupFlag", &fMVPileupFlag);
     lTree->SetBranchAddress("fTreeCascVarClosestNonEmptyBC", &fClosestNonEmptyBC);
@@ -2578,9 +2592,9 @@ void AliCascadeModule::DoAnalysis(){
                 lDcaV0Daughters           < fCutDCAV0Daughters    &&
                 lDcaCascDaughters         < fCutDCACascDaughters  &&
                 lDcaV0ToPV                > fCutDCAV0ToPV         &&
-                lDCACascToPV              < fCutDCACascToPV       &&
-                lDCAxyCascToPV            < fCutDCAxyCascToPV     &&
-                lDCAzCascToPV             < fCutDCAzCascToPV      &&
+                //lDCACascToPV              < fCutDCACascToPV       &&
+                //lDCAxyCascToPV            < fCutDCAxyCascToPV     &&
+                //lDCAzCascToPV             < fCutDCAzCascToPV      &&
                 lParticleMass*lDistOverTotMom     < fCutProperLifetime   &&
                 lDCAzNegToPrimVertex      < fCutDCAzNegToPV       &&
                 lDCAzPosToPrimVertex      < fCutDCAzPosToPV       &&
@@ -2616,7 +2630,6 @@ void AliCascadeModule::DoAnalysis(){
                     && TMath::Abs(lNSigmasNegProton) < fCutTPCPIDNSigmas
                     && TMath::Abs(lNSigmasBachKaon)  < fCutTPCPIDNSigmas)
                 ) &&  
-
                 //OOB condition
                 CheckITSTOF(lPosTrackStatus,  lNegTrackStatus,  lBachTrackStatus, lPosTOFBCID,  lNegTOFBCID, lBachTOFBCID)
            
@@ -2955,9 +2968,9 @@ void AliCascadeModule::DoAnalysis(){
             lDcaV0Daughters           <  fCutDCAV0Daughters      &&
             lDcaCascDaughters         <  fCutDCACascDaughters    &&
             lDcaV0ToPV                >  fCutDCAV0ToPV           &&
-            lDCACascToPV              <  fCutDCACascToPV         &&
-            lDCAxyCascToPV            <  fCutDCAxyCascToPV       &&
-            lDCAzCascToPV             <  fCutDCAzCascToPV        &&
+            //lDCACascToPV              < fCutDCACascToPV       &&
+            //lDCAxyCascToPV            < fCutDCAxyCascToPV     &&
+            //lDCAzCascToPV             < fCutDCAzCascToPV      &&
             lParticleMass*lDistOverTotMom     <  fCutProperLifetime      &&
             lDCAzNegToPrimVertex      <  fCutDCAzNegToPV         &&
             lDCAzPosToPrimVertex      <  fCutDCAzPosToPV         &&
@@ -2993,7 +3006,6 @@ void AliCascadeModule::DoAnalysis(){
                 && TMath::Abs(lNSigmasNegProton) <  fCutTPCPIDNSigmas  
                 && TMath::Abs(lNSigmasBachKaon)  <  fCutTPCPIDNSigmas  )
             ) &&  
-
             //OOB condition
             CheckITSTOF(lPosTrackStatus,  lNegTrackStatus,  lBachTrackStatus, lPosTOFBCID,  lNegTOFBCID, lBachTOFBCID)
         
@@ -3349,9 +3361,9 @@ void AliCascadeModule::DoAnalysis(){
     lTreeMC->SetBranchAddress("fTreeCascVarNegTrackStatus" , &lNegTrackStatus);
     lTreeMC->SetBranchAddress("fTreeCascVarBachTrackStatus", &lBachTrackStatus);
     //--- TOF info -----------------------------------------------------
-    lTreeMC->SetBranchAddress("fTreeCascVarNegTOFBCID" , &lNegTOFBCID);
-    lTreeMC->SetBranchAddress("fTreeCascVarPosTOFBCID" , &lPosTOFBCID);
-    lTreeMC->SetBranchAddress("fTreeCascVarBachTOFBCID", &lBachTOFBCID);
+    lTreeMC->SetBranchAddress("fTreeCascVarNegTOFBCid" , &lNegTOFBCID);
+    lTreeMC->SetBranchAddress("fTreeCascVarPosTOFBCid" , &lPosTOFBCID);
+    lTreeMC->SetBranchAddress("fTreeCascVarBachTOFBCid", &lBachTOFBCID);
     lTreeMC->SetBranchAddress("fTreeCascVarNegTOFSignal" , &lNegTOFSignal);
     lTreeMC->SetBranchAddress("fTreeCascVarPosTOFSignal" , &lPosTOFSignal);
     lTreeMC->SetBranchAddress("fTreeCascVarBachTOFSignal", &lBachTOFSignal);
@@ -3434,9 +3446,9 @@ void AliCascadeModule::DoAnalysis(){
             lDcaV0Daughters           < fCutDCAV0Daughters     &&
             lDcaCascDaughters         < fCutDCACascDaughters   &&
             lDcaV0ToPV                > fCutDCAV0ToPV          &&
-            lDCACascToPV              < fCutDCACascToPV        &&
-            lDCAxyCascToPV            < fCutDCAxyCascToPV      &&
-            lDCAzCascToPV             < fCutDCAzCascToPV       &&
+            // lDCACascToPV              <  fCutDCACascToPV         &&
+           // lDCAxyCascToPV            <  fCutDCAxyCascToPV       &&
+           // lDCAzCascToPV             <  fCutDCAzCascToPV        &&
             lParticleMass*lDistOverTotMom     < fCutProperLifetime     &&
             lDCAzNegToPrimVertex      < fCutDCAzNegToPV        &&
             lDCAzPosToPrimVertex      < fCutDCAzPosToPV        &&
@@ -3938,10 +3950,10 @@ void AliCascadeModule::DoAnalysis(){
             lDcaV0Daughters           < fCutDCAV0Daughters     &&
             lDcaCascDaughters         < fCutDCACascDaughters   &&
             lDcaV0ToPV                > fCutDCAV0ToPV          &&
-            lDCACascToPV              < fCutDCACascToPV        &&
-            lDCAxyCascToPV            < fCutDCAxyCascToPV      &&
-            lDCAzCascToPV             < fCutDCAzCascToPV       &&
-            lParticleMass*lDistOverTotMom     < fCutProperLifetime     &&
+          // lDCACascToPV              <  fCutDCACascToPV         &&
+           // lDCAxyCascToPV            <  fCutDCAxyCascToPV       &&
+           // lDCAzCascToPV             <  fCutDCAzCascToPV        &&
+             lParticleMass*lDistOverTotMom     < fCutProperLifetime     &&
             lDCAzNegToPrimVertex      < fCutDCAzNegToPV        &&
             lDCAzPosToPrimVertex      < fCutDCAzPosToPV        &&
             lDCAzBachToPrimVertex     < fCutDCAzBachToPV       &&

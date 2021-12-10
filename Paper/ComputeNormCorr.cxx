@@ -21,12 +21,12 @@ void ComputeNormCorr(
     Double_t lFixedLo = 0.0,
 	Double_t lFixedHi = 100.0,
 	TString lWhichVarEstimator = "SPDClusters",
-	TString lWhichFixedEstimator = "V0M"
+	TString lWhichFixedEstimator = "ZDC"
     ){
 
     cout << "Please check the percentile binning is fine before running!!!\n" << endl;
 
-    TFile* file = new TFile("../AODAnalysis/MC15g3c3_AOD.root","READ");
+    TFile* file = new TFile("~/Scaricati/fffff.root","READ");
 
 	const char* outputname = Form("Norm-%s-13TeV_%s_Fixed%sin%03.0f_%03.0f.root", 
                                 lCascType.Data(), lWhichVarEstimator.Data(), lWhichFixedEstimator.Data(), lFixedLo, lFixedHi);
@@ -43,6 +43,10 @@ void ComputeNormCorr(
     if (lCascType.Contains("Omega")){
         particle = "OmegaMinus";
         antiparticle = "OmegaPlus";
+    }
+    if (lCascType.Contains("Lambda")){
+        particle = "Lambda";
+        antiparticle = "AntiLambda";
     }
 
 	cout<<"--------------- Open Data File --------------------"<<endl;
@@ -67,7 +71,7 @@ void ComputeNormCorr(
     if (lWhichVarEstimator.Contains("ZDC") || lWhichFixedEstimator.Contains("ZDC")) lTreeEvent->SetBranchAddress("fCentrality_ZDC", &fEnergy);
     
     //Percentile
-    Float_t percentile[] = {0,100};
+    Float_t percentile[] = {0,10};
     Long_t percbinnumb = sizeof(percentile)/sizeof(Float_t) - 1;
     Long_t lNEvtSelected[percbinnumb];
     Long_t lNEvttrueSelected[percbinnumb];    
@@ -83,6 +87,9 @@ void ComputeNormCorr(
     Long_t ptbinnumbXi = sizeof(ptbinlimitsXi)/sizeof(Double_t) - 1;
     Double_t ptbinlimitsOmega[] = {0.90, 1.60, 2.20, 2.60, 3.00, 3.80, 5.50, 8.00, 10.0 }; 
     Long_t ptbinnumbOmega = sizeof(ptbinlimitsOmega)/sizeof(Double_t) - 1;
+    Double_t ptbinlimitsLambda[] = {0.4,  0.6, 0.8, 1., 1.2, 1.4, 1.6, 1.8, 2, 2.2, 2.5, 2.9, 3.4, 4, 5, 6.5, 8, 10};
+    Long_t ptbinnumbLambda = sizeof(ptbinlimitsLambda)/sizeof(Double_t) - 1;;
+  
     
     if (lCascType.Contains("Xi")) {
         ptbinlimits = ptbinlimitsXi;
@@ -91,6 +98,10 @@ void ComputeNormCorr(
     if (lCascType.Contains("Omega")) {
         ptbinlimits = ptbinlimitsOmega;
         ptbinnumb = ptbinnumbOmega;
+    }
+    if (lCascType.Contains("Lambda")) {
+        ptbinlimits = ptbinlimitsLambda;
+        ptbinnumb = ptbinnumbLambda;
     }
 
     if (DoEventLoss){
@@ -170,14 +181,14 @@ void ComputeNormCorr(
     if (DoSignalLoss){
 
         // INEL > 0
-        h3DGenSel = (TH3D*)clist->FindObject(Form("fHistGeneratedPtVsSPDclVsCent%s%s", lEnergyEstimator.Data(), particle.Data()));
+        h3DGenSel = (TH3D*)clist->FindObject(Form("fHistGeneratedPtVsSPDclVs%s%s", lEnergyEstimator.Data(), particle.Data()));
         h3DGenSel->Sumw2();
-        h3DGenSelAntiPart = (TH3D*)clist->FindObject(Form("fHistGeneratedPtVsSPDclVsCent%s%s", lEnergyEstimator.Data(),antiparticle.Data()));
+        h3DGenSelAntiPart = (TH3D*)clist->FindObject(Form("fHistGeneratedPtVsSPDclVs%s%s", lEnergyEstimator.Data(),antiparticle.Data()));
         h3DGenSelAntiPart->Sumw2();
         // true INEL > 0
-        h3DGentrueSel = (TH3D*)clist->FindObject(Form("fHistPtVsSPDclVsCent%s_Gen%s", lEnergyEstimator.Data(), particle.Data()));
+        h3DGentrueSel = (TH3D*)clist->FindObject(Form("fHistPtVsSPDclVs%s_Gen%s", lEnergyEstimator.Data(), particle.Data()));
         h3DGentrueSel->Sumw2();
-        h3DGentrueSelAntiPart = (TH3D*)clist->FindObject(Form("fHistPtVsSPDclVsCent%s_Gen%s", lEnergyEstimator.Data(), antiparticle.Data()));
+        h3DGentrueSelAntiPart = (TH3D*)clist->FindObject(Form("fHistPtVsSPDclVs%s_Gen%s", lEnergyEstimator.Data(), antiparticle.Data()));
         h3DGentrueSelAntiPart->Sumw2();
 
         // Add particle + antiparticle
