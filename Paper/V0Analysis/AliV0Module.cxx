@@ -472,7 +472,7 @@ void AliV0Module::SetDefaultCuts() {
     // --- DistToPV.............: Iouri, Luke
     fPrimarySelection = "IsPhysicalPrimary";
     fDistToPVCut = 0.001;
-    if( fWhichParticle == "Lambda" || fWhichParticle == "AntiLambda" ) SetPtProCut(0.4);
+    if( fWhichParticle == "Lambda" || fWhichParticle == "AntiLambda" ) SetPtProCut(0.3);
     if( fWhichParticle == "K0Short") SetPtProCut(0.0);
     fRequestITSTOF = -1;
     if(fWhichParticle == "K0Short") fPtMinITSTOF = 1.;
@@ -1036,8 +1036,8 @@ void AliV0Module::DoAnalysis() {
     Float_t lMultiplicity = 0; //for ease of handling later
     Float_t lEnergyPercentile = -1.;
     ///
-    Float_t fTreeVariablePtLegPos; 
-    Float_t fTreeVariablePtLegNeg; 
+    Float_t fTreeVariableNegInnerP; 
+    Float_t fTreeVariablePosInnerP; 
     Float_t lPtXv0Pos;
     Float_t lPtYv0Pos;
     Float_t lPtZv0Pos;
@@ -1108,9 +1108,9 @@ void AliV0Module::DoAnalysis() {
     if (fWhichMultEstimator.Contains("SPD") ) 
         lTree->SetBranchAddress(Form("fTreeVariableCentrality_%s",fWhichMultEstimator.Data()), &fMultCentrality);
     lTree->SetBranchAddress(Form("fTreeVariableCentrality_%s",fWhichEffEnergyEstimator.Data()), &fEnergyCentrality);
-    /*lTree->SetBranchAddress("fTreeVariablePtInnerParamPos",&fTreeVariablePtLegPos);
-    lTree->SetBranchAddress("fTreeVariablePtInnerParamNeg",&fTreeVariablePtLegNeg);
-    lTree->SetBranchAddress("fTreeVariablePIDTrackingPos",&pidFromTrackPos);
+    lTree->SetBranchAddress("fTreeVariableNegInnerP",&fTreeVariableNegInnerP);
+    lTree->SetBranchAddress("fTreeVariablePosInnerP",&fTreeVariablePosInnerP);
+    /*lTree->SetBranchAddress("fTreeVariablePIDTrackingPos",&pidFromTrackPos);
     lTree->SetBranchAddress("fTreeVariablePIDTrackingNeg",&pidFromTrackNeg);*/
     lTree->SetBranchAddress("fTreeVariableRun", &fRun);
     lTree->SetBranchAddress("fTreeVariablePosPx"     , &lPosPx);
@@ -1344,11 +1344,11 @@ void AliV0Module::DoAnalysis() {
                       && TMath::Abs(lNSigmasPosPion)   <= fCutTPCPIDNSigmas
                       && TMath::Abs(lNSigmasNegPion)   <= fCutTPCPIDNSigmas)
                 )  &&
-               /* ( FIXME
-                 (fWhichParticle == "Lambda" && fTreeVariablePtLegPos > fPtLegProtCut ) ||
-                 (fWhichParticle == "AntiLambda" && fTreeVariablePtLegNeg > fPtLegProtCut ) ||
+                ( 
+                 (fWhichParticle == "Lambda" && fTreeVariableNegInnerP > fPtLegProtCut ) ||
+                 (fWhichParticle == "AntiLambda" && fTreeVariablePosInnerP > fPtLegProtCut ) ||
                  (fWhichParticle == "K0Short")
-                )  &&*/
+                )  &&
                 //OOB condition
                 CheckITSTOF(lPosTrackStatus,  lNegTrackStatus,  fTreeVariablePosTOFBCid,  fTreeVariableNegTOFBCid)
 
@@ -1372,8 +1372,8 @@ void AliV0Module::DoAnalysis() {
                 lSigPlusCenterBgV0[lWeAreAtBin]++;
             }
 
-        //    if ( fWhichParticle == "Lambda"  /* && pidFromTrackPos != 4 */ ) lProtonMomentumData[lWeAreAtBin]->Fill( fTreeVariablePtLegPos);
-        //    if ( fWhichParticle == "AntiLambda" /* && pidFromTrackNeg != 4 */ ) lProtonMomentumData[lWeAreAtBin]->Fill( fTreeVariablePtLegNeg );
+        //    if ( fWhichParticle == "Lambda"  /* && pidFromTrackPos != 4 */ ) lProtonMomentumData[lWeAreAtBin]->Fill( fTreeVariableNegInnerP);
+        //    if ( fWhichParticle == "AntiLambda" /* && pidFromTrackNeg != 4 */ ) lProtonMomentumData[lWeAreAtBin]->Fill( fTreeVariablePosInnerP );
         } // End Entry Loop
     }
     cout<<"--------------- Loop Completed -------------------------"<<endl;
@@ -1555,8 +1555,8 @@ void AliV0Module::DoAnalysis() {
     if (fWhichMultEstimator.Contains("SPD") ) 
         lTreeMC->SetBranchAddress(Form("fTreeVariableCentrality_%s",fWhichMultEstimator.Data()), &fMultCentrality);
     lTreeMC->SetBranchAddress(Form("fTreeVariableCentrality_%s",fWhichEffEnergyEstimator.Data()), &fEnergyCentrality);
-  //  lTreeMC->SetBranchAddress("fTreeVariablePtInnerParamPos",&fTreeVariablePtLegPos);
-  //  lTreeMC->SetBranchAddress("fTreeVariablePtInnerParamNeg",&fTreeVariablePtLegNeg);
+    lTreeMC->SetBranchAddress("fTreeVariableNegInnerP",&fTreeVariableNegInnerP);
+    lTreeMC->SetBranchAddress("fTreeVariablePosInnerP",&fTreeVariablePosInnerP);
 
     //--- Armenteros-Podolansky ----------------------------------------
    // lTreeMC->SetBranchAddress("fTreeVariableAlphaV0",&lArmAlpha);
@@ -1631,12 +1631,12 @@ void AliV0Module::DoAnalysis() {
                     ) )
                 && //OOB condition
                 CheckITSTOF(lPosTrackStatus,  lNegTrackStatus,  fTreeVariablePosTOFBCid,  fTreeVariableNegTOFBCid)
-                /*&& FIXME
+                && 
                 (
-                 (fWhichParticle == "Lambda" && fTreeVariablePtLegPos > fPtLegProtCut  ) ||
-                 (fWhichParticle == "AntiLambda" && fTreeVariablePtLegNeg > fPtLegProtCut ) ||
+                 (fWhichParticle == "Lambda" && fTreeVariableNegInnerP > fPtLegProtCut  ) ||
+                 (fWhichParticle == "AntiLambda" && fTreeVariablePosInnerP > fPtLegProtCut ) ||
                  (fWhichParticle == "K0Short")
-                )*/ 
+                )
           ) { // Start Entry Loop
             
             lWeAreAtBin = fHistPt->FindBin(lPt)-1;
@@ -2035,8 +2035,8 @@ void AliV0Module::DoAnalysis() {
         //--- Armenteros-Podolansky ----------------------------------------
         lTreeMCFD->SetBranchAddress("fTreeVariableAlphaV0",&lArmAlpha);
         lTreeMCFD->SetBranchAddress("fTreeVariablePtArmV0",&lArmPt);   
-        //lTreeMCFD->SetBranchAddress("fTreeVariablePtInnerParamPos",&fTreeVariablePtLegPos);
-        //lTreeMCFD->SetBranchAddress("fTreeVariablePtInnerParamNeg",&fTreeVariablePtLegNeg);
+        //lTreeMCFD->SetBranchAddress("fTreeVariablePtInnerParamPos",&fTreeVariableNegInnerP);
+        //lTreeMCFD->SetBranchAddress("fTreeVariablePtInnerParamNeg",&fTreeVariablePosInnerP);
         //--- TPC dEdx Variables ------------------------------------------
         lTreeMCFD->SetBranchAddress("fTreeVariableNSigmasPosProton",&lNSigmasPosProton);
         lTreeMCFD->SetBranchAddress("fTreeVariableNSigmasNegProton",&lNSigmasNegProton);
@@ -2111,11 +2111,11 @@ void AliV0Module::DoAnalysis() {
                           && lPrimaryStatusMother == 1 //Xi is actually a primary (should matter little)
                         )
                     )  &&
-                    /* (
-                      (fWhichParticle == "Lambda" && fTreeVariablePtLegPos > fPtLegProtCut ) ||
-                      (fWhichParticle == "AntiLambda" && fTreeVariablePtLegNeg > fPtLegProtCut) ||
-                      (fWhichParticle == "K0Short")) */
-                    
+                     (
+                      (fWhichParticle == "Lambda" && fTreeVariableNegInnerP > fPtLegProtCut ) ||
+                      (fWhichParticle == "AntiLambda" && fTreeVariablePosInnerP > fPtLegProtCut) ||
+                      (fWhichParticle == "K0Short")) 
+                      &&
                     //OOB condition
                     CheckITSTOF(lPosTrackStatus,  lNegTrackStatus,  fTreeVariablePosTOFBCid,  fTreeVariableNegTOFBCid)
               
