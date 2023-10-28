@@ -1,0 +1,10 @@
+#! /usr/bin/env bash
+
+mv Results-K0Short-13TeV-SPDClusters_040_050_V0M_000_020_FDNoFD.root Results-K0Short-13TeV-SPDClusters_040_050_V0M_000_020_FDUseMCRatio.root
+mv Results-K0Short-13TeV-SPDClusters_040_050_V0M_010_020_FDNoFD.root Results-K0Short-13TeV-SPDClusters_040_050_V0M_010_020_FDUseMCRatio.root
+mv Results-K0Short-13TeV-SPDClusters_040_050_V0M_020_030_FDNoFD.root Results-K0Short-13TeV-SPDClusters_040_050_V0M_020_030_FDUseMCRatio.root
+mv Results-K0Short-13TeV-SPDClusters_040_050_V0M_030_040_FDNoFD.root Results-K0Short-13TeV-SPDClusters_040_050_V0M_030_040_FDUseMCRatio.root
+mv Results-K0Short-13TeV-SPDClusters_040_050_V0M_040_050_FDNoFD.root Results-K0Short-13TeV-SPDClusters_040_050_V0M_040_050_FDUseMCRatio.root
+mv Results-K0Short-13TeV-SPDClusters_040_050_V0M_050_060_FDNoFD.root Results-K0Short-13TeV-SPDClusters_040_050_V0M_050_060_FDUseMCRatio.root
+mv Results-K0Short-13TeV-SPDClusters_040_050_V0M_060_070_FDNoFD.root Results-K0Short-13TeV-SPDClusters_040_050_V0M_060_070_FDUseMCRatio.root
+mv Results-K0Short-13TeV-SPDClusters_040_050_V0M_070_100_FDNoFD.root Results-K0Short-13TeV-SPDClusters_040_050_V0M_070_100_FDUseMCRatio.root

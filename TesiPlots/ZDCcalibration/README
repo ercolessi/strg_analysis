@@ -1,0 +1,12 @@
+root -b -q -l SaveNch.cxx 
+root -b -q -l SaveNch.cxx\(\"15f\"\)
+root -b -q -l SaveNch.cxx\(\"17j\"\)
+root -b -q -l makepedzdc.C
+root -b -q -l SaveNch.cxx
+root -b -q -l SaveNch.cxx\(\"15f\"\)
+root -b -q -l SaveNch.cxx\(\"17j\"\)
+root -b -q -l makepedzdc.C
+root -b -q -l SaveNch.cxx
+root -b -q -l SaveNch.cxx\(\"15f\"\)
+root -b -q -l SaveNch.cxx\(\"17j\"\)
+root compareZDCper.C 

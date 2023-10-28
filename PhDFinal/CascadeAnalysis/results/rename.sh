@@ -1,0 +1,31 @@
+#! /usr/bin/env bash
+
+mv Results-XiMinus-13TeV-SPDClusters_000_100_V0M_000_001.root Results-XiMinus-13TeV-SPDtrk0815_000_100_V0M_000_001.root
+mv Results-XiMinus-13TeV-SPDClusters_000_100_V0M_000_010.root Results-XiMinus-13TeV-SPDtrk0815_000_100_V0M_000_010.root
+mv Results-XiMinus-13TeV-SPDClusters_000_100_V0M_001_005.root Results-XiMinus-13TeV-SPDtrk0815_000_100_V0M_001_005.root
+mv Results-XiMinus-13TeV-SPDClusters_000_100_V0M_005_010.root Results-XiMinus-13TeV-SPDtrk0815_000_100_V0M_005_010.root
+mv Results-XiMinus-13TeV-SPDClusters_000_100_V0M_010_015.root Results-XiMinus-13TeV-SPDtrk0815_000_100_V0M_010_015.root
+mv Results-XiMinus-13TeV-SPDClusters_000_100_V0M_015_020.root Results-XiMinus-13TeV-SPDtrk0815_000_100_V0M_015_020.root
+mv Results-XiMinus-13TeV-SPDClusters_000_100_V0M_020_030.root Results-XiMinus-13TeV-SPDtrk0815_000_100_V0M_020_030.root
+mv Results-XiMinus-13TeV-SPDClusters_000_100_V0M_030_040.root Results-XiMinus-13TeV-SPDtrk0815_000_100_V0M_030_040.root
+mv Results-XiMinus-13TeV-SPDClusters_000_100_V0M_040_050.root Results-XiMinus-13TeV-SPDtrk0815_000_100_V0M_040_050.root
+mv Results-XiMinus-13TeV-SPDClusters_000_100_V0M_050_065.root Results-XiMinus-13TeV-SPDtrk0815_000_100_V0M_050_065.root
+mv Results-XiMinus-13TeV-SPDClusters_000_100_V0M_050_070.root Results-XiMinus-13TeV-SPDtrk0815_000_100_V0M_050_070.root
+mv Results-XiMinus-13TeV-SPDClusters_000_100_V0M_065_080.root Results-XiMinus-13TeV-SPDtrk0815_000_100_V0M_065_080.root
+mv Results-XiMinus-13TeV-SPDClusters_000_100_V0M_070_100.root Results-XiMinus-13TeV-SPDtrk0815_000_100_V0M_070_100.root
+mv Results-XiMinus-13TeV-SPDClusters_000_100_V0M_080_100.root Results-XiMinus-13TeV-SPDtrk0815_000_100_V0M_080_100.root
+
+mv Results-XiPlus-13TeV-SPDClusters_000_100_V0M_000_001.root Results-XiPlus-13TeV-SPDtrk0815_000_100_V0M_000_001.root
+mv Results-XiPlus-13TeV-SPDClusters_000_100_V0M_000_010.root Results-XiPlus-13TeV-SPDtrk0815_000_100_V0M_000_010.root
+mv Results-XiPlus-13TeV-SPDClusters_000_100_V0M_001_005.root Results-XiPlus-13TeV-SPDtrk0815_000_100_V0M_001_005.root
+mv Results-XiPlus-13TeV-SPDClusters_000_100_V0M_005_010.root Results-XiPlus-13TeV-SPDtrk0815_000_100_V0M_005_010.root
+mv Results-XiPlus-13TeV-SPDClusters_000_100_V0M_010_015.root Results-XiPlus-13TeV-SPDtrk0815_000_100_V0M_010_015.root
+mv Results-XiPlus-13TeV-SPDClusters_000_100_V0M_015_020.root Results-XiPlus-13TeV-SPDtrk0815_000_100_V0M_015_020.root
+mv Results-XiPlus-13TeV-SPDClusters_000_100_V0M_020_030.root Results-XiPlus-13TeV-SPDtrk0815_000_100_V0M_020_030.root
+mv Results-XiPlus-13TeV-SPDClusters_000_100_V0M_030_040.root Results-XiPlus-13TeV-SPDtrk0815_000_100_V0M_030_040.root
+mv Results-XiPlus-13TeV-SPDClusters_000_100_V0M_040_050.root Results-XiPlus-13TeV-SPDtrk0815_000_100_V0M_040_050.root
+mv Results-XiPlus-13TeV-SPDClusters_000_100_V0M_050_065.root Results-XiPlus-13TeV-SPDtrk0815_000_100_V0M_050_065.root
+mv Results-XiPlus-13TeV-SPDClusters_000_100_V0M_050_070.root Results-XiPlus-13TeV-SPDtrk0815_000_100_V0M_050_070.root
+mv Results-XiPlus-13TeV-SPDClusters_000_100_V0M_065_080.root Results-XiPlus-13TeV-SPDtrk0815_000_100_V0M_065_080.root
+mv Results-XiPlus-13TeV-SPDClusters_000_100_V0M_070_100.root Results-XiPlus-13TeV-SPDtrk0815_000_100_V0M_070_100.root
+mv Results-XiPlus-13TeV-SPDClusters_000_100_V0M_080_100.root Results-XiPlus-13TeV-SPDtrk0815_000_100_V0M_080_100.root
